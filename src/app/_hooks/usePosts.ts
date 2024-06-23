@@ -1,7 +1,7 @@
 import useSWR from "swr";
-import BlogPostsResponse from "@/types/blogPostsResponse";
-import delayedGetFetcher from "@/utils/delayedGetFetcher";
-import { isDevelopmentEnv, postsApiEndpoint } from "@/utils/envConfig";
+import BlogPostsResponse from "@/app/_types/blogPostsResponse";
+import delayedGetFetcher from "@/app/_utils/delayedGetFetcher";
+import { isDevelopmentEnv, postsApiEndpoint } from "@/app/_utils/envConfig";
 
 // ブログ記事【複数（配列）】を取得するためのカスタムフック
 const usePosts = () => {

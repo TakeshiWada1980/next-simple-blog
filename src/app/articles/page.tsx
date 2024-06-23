@@ -1,6 +1,6 @@
 "use client";
 
-import Articles from "@/components/Articles";
+import Articles from "@/app/_components/Articles";
 
 const Page = () => {
   return (

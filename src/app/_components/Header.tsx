@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import React, { use } from "react";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
-import "./globals.css";
 
 const Header = () => {
   return (

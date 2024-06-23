@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import ArticleSummary from "@/components/ArticleSummary";
-import FetchLoading from "@/elements/FetchLoading";
-import FetchError from "@/elements/FetchError";
-import usePosts from "@/hooks/usePosts";
+import ArticleSummary from "@/app/_components/ArticleSummary";
+import FetchLoading from "@/app/_elements/FetchLoading";
+import FetchError from "@/app/_elements/FetchError";
+import usePosts from "@/app/_hooks/usePosts";
 
 const Articles = () => {
   // カスタムフック usePosts で記事一覧を取得

@@ -5,10 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import validationSchema from "./validationSchema";
 import submissionResponse from "./submissionResponse";
 import formData from "./formBody";
-import { contactApiEndpoint } from "@/utils/envConfig";
-import delayedPostFetcher from "@/utils/delayedPostFetcher";
-import FetchLoading from "@/elements/FetchLoading";
-import ErrorMessage from "@/elements/ErrorMessage";
+import { contactApiEndpoint } from "@/app/_utils/envConfig";
+import delayedPostFetcher from "@/app/_utils/delayedPostFetcher";
+import FetchLoading from "@/app/_elements/FetchLoading";
+import ErrorMessage from "@/app/_elements/ErrorMessage";
 import cn from "classnames";
 
 // スタイル設定

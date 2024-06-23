@@ -1,5 +1,4 @@
 import axios from "axios";
-import exp from "constants";
 
 /**
  * 遅延時間後にデータを返すFetcherを得る高階関数

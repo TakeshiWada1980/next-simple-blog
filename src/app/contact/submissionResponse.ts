@@ -1,4 +1,4 @@
-// 問い合わせフォームの送信APIのレスポンス
+// 問い合わせフォームの送信時のレスポンス
 type submissionResponse = {
   message: string;
   data: FormData;

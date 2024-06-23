@@ -6,9 +6,9 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { config } from "@fortawesome/fontawesome-svg-core";
 config.autoAddCss = false; /* eslint-disable import/first */
 
-import type { Metadata } from "next";
 import "./globals.css";
-import Header from "./Header";
+import type { Metadata } from "next";
+import Header from "@/app/_components/Header";
 
 export const metadata: Metadata = {
   title: "Next Simple Blog",

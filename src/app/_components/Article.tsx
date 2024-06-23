@@ -1,9 +1,9 @@
-import { formatIso8601ToJpDateTime } from "@/utils/dateTimeUtils";
+import { formatIso8601ToJpDateTime } from "@/app/_utils/dateTimeUtils";
 import DOMPurify from "isomorphic-dompurify";
-import Tag from "@/elements/Tag";
-import FetchLoading from "@/elements/FetchLoading";
-import FetchError from "@/elements/FetchError";
-import usePost from "@/hooks/usePost";
+import Tag from "@/app/_elements/Tag";
+import FetchLoading from "@/app/_elements/FetchLoading";
+import FetchError from "@/app/_elements/FetchError";
+import usePost from "@/app/_hooks/usePost";
 import Image from "next/image";
 
 type Props = {

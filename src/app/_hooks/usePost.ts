@@ -1,7 +1,7 @@
 import useSWR from "swr";
-import BlogPostResponse from "@/types/blogPostResponse";
-import delayedGetFetcher from "@/utils/delayedGetFetcher";
-import { isDevelopmentEnv, postsApiEndpoint } from "@/utils/envConfig";
+import BlogPostResponse from "@/app/_types/blogPostResponse";
+import delayedGetFetcher from "@/app/_utils/delayedGetFetcher";
+import { isDevelopmentEnv, postsApiEndpoint } from "@/app/_utils/envConfig";
 
 // ブログ記事【単体】を取得するためのカスタムフック
 const usePost = (id: string) => {

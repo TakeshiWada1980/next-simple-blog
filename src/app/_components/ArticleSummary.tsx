@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import React from "react";
-import Post from "@/types/post";
-import { formatIso8601ToJpDateTime } from "@/utils/dateTimeUtils";
+import Post from "@/app/_types/post";
+import { formatIso8601ToJpDateTime } from "@/app/_utils/dateTimeUtils";
 import DOMPurify from "isomorphic-dompurify";
-import Tag from "@/elements/Tag";
+import Tag from "@/app/_elements/Tag";
 
 type Props = {
   post: Post;

@@ -1,4 +1,4 @@
-import { urlPattern } from "@/utils/common";
+import { urlPattern } from "@/app/_utils/common";
 
 /**
  * 環境変数からAPIエンドポイントを取得して有効なURLであるかを検証
