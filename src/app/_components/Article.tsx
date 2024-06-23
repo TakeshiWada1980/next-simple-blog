@@ -31,7 +31,13 @@ const Article: React.FC<Props> = ({ id }) => {
   return (
     <div className="mt-5 flex flex-col justify-center">
       {/* サムネイル */}
-      <Image src={thumbnailUrl} alt="サムネイル画像" width={800} height={400} />
+      <Image
+        src={thumbnailUrl}
+        alt="サムネイル画像"
+        width={800}
+        height={400}
+        priority
+      />
       {/* 日付 & カテゴリ*/}
       <div className="sm:px-4">
         {/* 日付 & カテゴリ*/}
