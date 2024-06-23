@@ -7,8 +7,8 @@ import submissionResponse from "./submissionResponse";
 import formData from "./formBody";
 import { contactApiEndpoint } from "@/app/_utils/envConfig";
 import delayedPostFetcher from "@/app/_utils/delayedPostFetcher";
-import FetchLoading from "@/app/_elements/FetchLoading";
-import ErrorMessage from "@/app/_elements/ErrorMessage";
+import FetchLoading from "@/app/_components/elements/FetchLoading";
+import ErrorMessage from "@/app/_components/elements/ErrorMessage";
 import cn from "classnames";
 
 // スタイル設定
@@ -125,7 +125,7 @@ const Contact = () => {
               {...register("message")}
               id="message"
               className={cn(styles.input, isSubmitting && styles.disabledInput)}
-              rows={8}
+              rows={6}
               placeholder="本文を入力してください。"
               disabled={isSubmitting}
             />
