@@ -22,8 +22,8 @@ const Articles = () => {
 
   return (
     <div className="mt-5 flex flex-col justify-center ">
-      {data?.posts.map((post) => (
-        <ArticleSummary key={post.id} post={post} />
+      {data?.contents.map((content) => (
+        <ArticleSummary key={content.id} post={content} />
       ))}
     </div>
   );

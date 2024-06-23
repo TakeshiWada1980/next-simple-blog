@@ -1,3 +1,5 @@
+"use client";
+
 import { formatIso8601ToJpDateTime } from "@/app/_utils/dateTimeUtils";
 import DOMPurify from "isomorphic-dompurify";
 import Tag from "./elements/Tag";
@@ -25,17 +27,20 @@ const Article: React.FC<Props> = ({ id }) => {
   }
 
   // Fetch succeeded
-  const createdAt = formatIso8601ToJpDateTime(data.post.createdAt);
-  const content: string = DOMPurify.sanitize(data.post.content);
-  const { thumbnailUrl, categories, title } = data.post;
+  const createdAt = formatIso8601ToJpDateTime(data.createdAt);
+  const content: string = DOMPurify.sanitize(data.content);
+  const thumbnail = data.thumbnail;
+  const categories = data.categories.map((category) => category.name);
+  const title = data.title;
   return (
     <div className="mt-5 flex flex-col justify-center">
       {/* サムネイル */}
       <Image
-        src={thumbnailUrl}
+        className="rounded-lg border border-stone-300"
+        src={thumbnail.url}
         alt="サムネイル画像"
-        width={800}
-        height={400}
+        width={thumbnail.width}
+        height={thumbnail.height}
         priority
       />
       {/* 日付 & カテゴリ*/}

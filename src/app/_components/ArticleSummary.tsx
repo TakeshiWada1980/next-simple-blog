@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import React from "react";
-import Post from "@/app/_types/post";
 import { formatIso8601ToJpDateTime } from "@/app/_utils/dateTimeUtils";
 import DOMPurify from "isomorphic-dompurify";
 import Tag from "./elements/Tag";
+import MicroCmsPost from "../_types/microCmsPost";
 
 type Props = {
-  post: Post;
+  post: MicroCmsPost;
 };
 
 const ArticleSummary: React.FC<Props> = (props) => {
@@ -31,7 +31,7 @@ const ArticleSummary: React.FC<Props> = (props) => {
           {/* カテゴリ */}
           <div className="flex items-center space-x-1">
             {categories.map((category) => (
-              <Tag name={category} key={category} />
+              <Tag name={category.name} key={category.id} />
             ))}
           </div>
         </div>

@@ -1,9 +1,6 @@
-import Post from "@/app/_types/post";
+import MicroCmsPost from "@/app/_types/microCmsPost";
 
 // ブログ記事（単体）の取得APIのレスポンス
-type BlogPostResponse = {
-  message: string;
-  post: Post;
-};
+type BlogPostResponse = MicroCmsPost;
 
 export default BlogPostResponse;

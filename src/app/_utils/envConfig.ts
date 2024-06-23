@@ -1,29 +1,27 @@
 import { urlPattern } from "@/app/_utils/common";
 
-/**
- * 環境変数からAPIエンドポイントを取得して有効なURLであるかを検証
- * @param {string} envVarName - 環境変数の名前
- * @returns {string} - 検証済みのAPIエンドポイントURL
- * @throws {Error} - 環境変数が未定義、無効なURLのときは例外をスロー
- */
-const getApiEndpoint = (path: string): string => {
-  const apiBaseUrl = process.env.NEXT_PUBLIC_BLOG_API_ENDPOINT;
-  if (!apiBaseUrl) {
-    throw new Error("NEXT_PUBLIC_BLOG_API_ENDPOINT is not defined");
+const validateURL = (url: string): string => {
+  if (!urlPattern.test(url)) {
+    throw new Error(`${url} is not a valid URL`);
   }
-  const endpoint = apiBaseUrl + path;
-  if (!urlPattern.test(endpoint)) {
-    throw new Error(`${endpoint} is not a valid URL`);
-  }
-  return endpoint;
+  return url;
 };
 
 // ブログ記事を取得(GET)するAPIエンドポイント
-export const postsApiEndpoint = getApiEndpoint("/posts");
+export const postsApiEndpoint = validateURL(
+  `${process.env.NEXT_PUBLIC_BLOG_API_ENDPOINT}/posts`
+);
 
 // お問い合わせ内容を送信(POST)するAPIエンドポイント
-export const contactApiEndpoint = getApiEndpoint("/contacts");
+export const contactApiEndpoint = validateURL(
+  `${process.env.NEXT_PUBLIC_BUBE_API_ENDPOINT}/contacts`
+);
+
+export const microCmsApiKey = process.env.NEXT_PUBLIC_MICROCMS_API_KEY;
 
 // 開発環境かどうか
 export const isDevelopmentEnv =
   process.env.NEXT_PUBLIC_IS_DEVELOPMENT_ENV === "true";
+
+// API取得時の遅延時間（ミリ秒）
+export const apiDelay = isDevelopmentEnv ? 100 : 0;

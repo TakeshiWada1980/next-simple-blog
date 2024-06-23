@@ -5,9 +5,16 @@ import axios from "axios";
  * @param number
  * @returns (url: string) => Promise<Response>
  */
-const delayedGetFetcher = <Response>(delay: number = 2000) => {
+const delayedGetFetcher = <Response>(
+  delay: number = 0,
+  apiKey: string = ""
+) => {
   return async (url: string): Promise<Response> => {
-    const { data } = await axios.get(url);
+    const { data } = await axios.get(url, {
+      headers: {
+        "X-MICROCMS-API-KEY": apiKey,
+      },
+    });
     if (delay > 0) {
       await new Promise((resolve) => setTimeout(resolve, delay)); // 遅延演出
     }
