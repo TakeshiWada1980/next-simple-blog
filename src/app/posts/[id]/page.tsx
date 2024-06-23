@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Article from "@/app/_components/Article";
+import Post from "./_components/Post";
 
 type Params = {
   id: string;
@@ -10,7 +10,7 @@ type Params = {
 const Page: React.FC<{ params: Params }> = ({ params }) => {
   return (
     <main>
-      <Article id={params.id} />
+      <Post id={params.id} />
     </main>
   );
 };

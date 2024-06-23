@@ -1,11 +1,11 @@
-import MicroCmsPost from "@/app/_types/microCmsPost";
+import MicroCmsPost from "@/app/_types/MicroCmsPost";
 
 // ブログ記事（一覧）の取得APIのレスポンス
-type BlogPostsResponse = {
+type GetPostsResponse = {
   contents: MicroCmsPost[];
   totalCount: number;
   offset: number;
   limit: number;
 };
 
-export default BlogPostsResponse;
+export default GetPostsResponse;

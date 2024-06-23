@@ -1,5 +1,5 @@
 import useSWR from "swr";
-import BlogPostResponse from "@/app/_types/blogPostResponse";
+import GetPostResponse from "../_types/GetPostResponse";
 import delayedGetFetcher from "@/app/_utils/delayedGetFetcher";
 import {
   postsApiEndpoint,
@@ -9,9 +9,9 @@ import {
 
 // ブログ記事【単体】を取得するためのカスタムフック
 const usePost = (id: string) => {
-  const { data, error, isLoading } = useSWR<BlogPostResponse>(
+  const { data, error, isLoading } = useSWR<GetPostResponse>(
     `${postsApiEndpoint}/${id}`,
-    delayedGetFetcher<BlogPostResponse>(apiDelay, microCmsApiKey)
+    delayedGetFetcher<GetPostResponse>(apiDelay, microCmsApiKey)
   );
   return { data, error, isLoading, endpoint: postsApiEndpoint };
 };

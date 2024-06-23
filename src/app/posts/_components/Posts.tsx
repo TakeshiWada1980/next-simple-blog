@@ -1,12 +1,12 @@
 "use client";
 
 import React from "react";
-import ArticleSummary from "@/app/_components/ArticleSummary";
-import FetchLoading from "./elements/FetchLoading";
-import FetchError from "./elements/FetchError";
-import usePosts from "@/app/_hooks/usePosts";
+import PostSummary from "./PostSummary";
+import FetchLoading from "@/app/_components/elements/FetchLoading";
+import FetchError from "@/app/_components/elements/FetchError";
+import usePosts from "../_hooks/usePosts";
 
-const Articles = () => {
+const Posts = () => {
   // カスタムフック usePosts で記事一覧を取得
   const { data, error, isLoading, endpoint } = usePosts();
 
@@ -23,10 +23,10 @@ const Articles = () => {
   return (
     <div className="mt-5 flex flex-col justify-center ">
       {data?.contents.map((content) => (
-        <ArticleSummary key={content.id} post={content} />
+        <PostSummary key={content.id} post={content} />
       ))}
     </div>
   );
 };
 
-export default Articles;
+export default Posts;

@@ -2,17 +2,17 @@
 
 import { formatIso8601ToJpDateTime } from "@/app/_utils/dateTimeUtils";
 import DOMPurify from "isomorphic-dompurify";
-import Tag from "./elements/Tag";
-import FetchLoading from "./elements/FetchLoading";
-import FetchError from "./elements/FetchError";
-import usePost from "@/app/_hooks/usePost";
+import Tag from "@/app/_components/elements/Tag";
+import FetchLoading from "@/app/_components/elements/FetchLoading";
+import FetchError from "@/app/_components/elements/FetchError";
+import usePost from "../_hooks/usePost";
 import Image from "next/image";
 
 type Props = {
   id: string;
 };
 
-const Article: React.FC<Props> = ({ id }) => {
+const Post: React.FC<Props> = ({ id }) => {
   // usePostフックで指定のエンドポイントからデータを取得
   const { data, error, isLoading, endpoint } = usePost(id);
 
@@ -55,7 +55,7 @@ const Article: React.FC<Props> = ({ id }) => {
           </div>
         </div>
         {/* タイトル */}
-        <div className="mt-3 text-2xl">{title}</div>
+        <div className="mt-3 text-2xl font-bold">{title}</div>
         {/* 本文 */}
         <section
           className="mt-4"
@@ -66,4 +66,4 @@ const Article: React.FC<Props> = ({ id }) => {
   );
 };
 
-export default Article;
+export default Post;
