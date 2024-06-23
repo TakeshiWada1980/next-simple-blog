@@ -2,9 +2,9 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import validationSchema from "./validationSchema";
-import submissionResponse from "./submissionResponse";
-import formData from "./formBody";
+import validationSchema from "./_types/ValidationSchema";
+import submissionResponse from "./_types/SubmissionResponse";
+import formData from "./_types/FormBody";
 import { contactApiEndpoint } from "@/app/_utils/envConfig";
 import delayedPostFetcher from "@/app/_utils/delayedPostFetcher";
 import FetchLoading from "@/app/_components/elements/FetchLoading";

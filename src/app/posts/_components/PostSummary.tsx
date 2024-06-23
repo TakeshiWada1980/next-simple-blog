@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import React from "react";
-import Post from "@/app/_types/post";
 import { formatIso8601ToJpDateTime } from "@/app/_utils/dateTimeUtils";
 import DOMPurify from "isomorphic-dompurify";
-import Tag from "./elements/Tag";
+import Tag from "@/app/_components/elements/Tag";
+import MicroCmsPost from "@/app/_types/MicroCmsPost";
 
 type Props = {
-  post: Post;
+  post: MicroCmsPost;
 };
 
 const ArticleSummary: React.FC<Props> = (props) => {
@@ -22,7 +22,7 @@ const ArticleSummary: React.FC<Props> = (props) => {
   return (
     <Link
       className="block mb-4 border border-stone-500 hover:border-stone-700"
-      href={`/articles/${id}`}
+      href={`/posts/${id}`}
     >
       <div className="p-3">
         <div className="flex justify-between items-center">
@@ -31,7 +31,7 @@ const ArticleSummary: React.FC<Props> = (props) => {
           {/* カテゴリ */}
           <div className="flex items-center space-x-1">
             {categories.map((category) => (
-              <Tag name={category} key={category} />
+              <Tag name={category.name} key={category.id} />
             ))}
           </div>
         </div>

@@ -27,6 +27,7 @@ const RootLayout = ({ children }: Props) => {
         <article className="container mx-auto px-3 md:w-2/3 xl:w-1/2">
           {children}
         </article>
+        <footer className="text-center text-sm mt-5"></footer>
       </body>
     </html>
   );

@@ -1,11 +1,11 @@
 "use client";
 
-import Articles from "@/app/_components/Articles";
+import Posts from "./posts/_components/Posts";
 
 const Page = () => {
   return (
     <main>
-      <Articles />
+      <Posts />
     </main>
   );
 };
