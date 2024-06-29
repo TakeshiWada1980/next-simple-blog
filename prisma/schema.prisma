@@ -3,6 +3,9 @@
 // npx prisma generate
 // https://miro.com/app/board/uXjVK5dcQxk=/?share_link_id=858227987907
 
+// NOTE:カラムの名称は Prisma 公式に倣って変更
+// https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -20,7 +23,7 @@ model Post {
   thumbnailUrl   String
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
-  categories     PostCategory[]
+  categories     CategoriesOnPosts[]
 }
 
 // カテゴリーテーブル
@@ -29,11 +32,11 @@ model Category {
   name      String          @unique
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
-  posts     PostCategory[]
+  posts     CategoriesOnPosts[]
 }
 
 // ブログ記事とカテゴリーを多対多で紐付ける中間テーブル
-model PostCategory {
+model CategoriesOnPosts {
   id         Int       @id @default(autoincrement())
   postId     Int
   categoryId Int

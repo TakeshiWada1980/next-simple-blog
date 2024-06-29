@@ -3,28 +3,31 @@ import { Category } from "@prisma/client";
 import {
   ApiSuccessResponse,
   ApiErrorResponse,
-  AppErrorCode,
   Origin,
 } from "@/app/_types/ApiResponse";
 import { StatusCodes } from "@/app/_utils/extendedStatusCodes";
 import SuccessResponseBuilder from "@/app/api/_helpers/successResponseBuilder";
 import ErrorResponseBuilder from "@/app/api/_helpers/errorResponseBuilder";
-import prisma from "@/lib/prisma";
 import { z } from "zod";
+import CategoryService from "@/app/_services/categoryService";
+import AppErrorCode from "@/app/_types/AppErrorCode";
+import CategoryRequest from "@/app/_types/CategoryRequest";
 
 // [POST] /api/admin/categories カテゴリを新規作成
 export const POST = async (req: NextRequest) => {
   try {
-    const body: PostPayload = await req.json();
+    const body: CategoryRequest.Payload = await req.json();
 
     // カテゴリ名の前後の空白を削除
     body.name = body.name ? body.name.trim() : "";
 
     // バリデーションに問題があれば z.ZodError が Throw
-    const validatedBody = postPayloadSchema.parse(body);
+    const validatedBody = CategoryRequest.validationSchema.parse(body);
 
     // DB関連で問題があればエラーが Throw
-    const insertedCategory = await insertCategory(validatedBody);
+    const insertedCategory = await CategoryService.insertCategory(
+      validatedBody
+    );
 
     const payload = createSuccessResponse(insertedCategory);
     return NextResponse.json(payload, { status: payload.httpStatus });
@@ -33,26 +36,6 @@ export const POST = async (req: NextRequest) => {
     return NextResponse.json(payload, { status: payload.httpStatus });
   }
 };
-
-// データベースにカテゴリデータを挿入
-const insertCategory = async (category: PostPayload) => {
-  const { name } = category;
-  // 当該のカテゴリが既に存在していないか？
-  if (await prisma.category.findUnique({ where: { name } })) {
-    throw new CategoryAlreadyExistsError(name);
-  }
-  const data = await prisma.category.create({ data: { name } });
-  return data;
-};
-
-// カテゴリが既に存在している場合のエラー
-class CategoryAlreadyExistsError extends Error {
-  appErrorCode: string;
-  constructor(categoryName: string) {
-    super(`カテゴリ '${categoryName}' は既に DB に存在しています。`);
-    this.appErrorCode = AppErrorCode.CATEGORY_ALREADY_EXISTS;
-  }
-}
 
 // 成功時のレスポンスを生成
 const createSuccessResponse = (
@@ -74,31 +57,14 @@ const createErrorResponse = (error: unknown): ApiErrorResponse => {
       .setOrigin(Origin.CLIENT)
       .setAppErrorCode(AppErrorCode.INVALID_POST_DATA)
       .setTechnicalInfo(msg);
-  } else if (error instanceof CategoryAlreadyExistsError) {
+  } else if (error instanceof CategoryService.AlreadyExistsError) {
     errorResponseBuilder
       .setHttpStatus(StatusCodes.BAD_REQUEST)
       .setOrigin(Origin.CLIENT)
       .setAppErrorCode(error.appErrorCode)
       .setTechnicalInfo(error.message);
   } else {
-    errorResponseBuilder
-      .setOrigin(Origin.SERVER)
-      .setHttpStatus(StatusCodes.INTERNAL_SERVER_ERROR)
-      .setAppErrorCode(AppErrorCode.UNKNOWN_ERROR)
-      .setTechnicalInfo(error instanceof Error ? error.message : "");
+    errorResponseBuilder.setUnknownError(error);
   }
   return errorResponseBuilder.build();
 };
-
-// リクエストデータのバリデーションスキーマ
-const requiredMsg = (field: string, type: string) =>
-  `${type}型の値を持つフィールド '${field}' が存在しません。`;
-const minMsg = (item: string, min: number) =>
-  `フィールド '${item}' には${min}文字以上を設定してください。`;
-const postPayloadSchema = z.object({
-  name: z
-    .string({ message: requiredMsg("name", "string") })
-    .min(1, minMsg("title", 1)),
-});
-
-type PostPayload = z.infer<typeof postPayloadSchema>;

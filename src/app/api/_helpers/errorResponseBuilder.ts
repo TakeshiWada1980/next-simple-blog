@@ -1,10 +1,10 @@
 import {
-  ApiResponse,
   ApiErrorResponse,
   ErrorDetails,
   Origin,
 } from "@/app/_types/ApiResponse";
 import { StatusCodes } from "@/app/_utils/extendedStatusCodes";
+import AppErrorCode from "@/app/_types/AppErrorCode";
 
 class ErrorResponseBuilder {
   private response: ApiErrorResponse;
@@ -41,6 +41,15 @@ class ErrorResponseBuilder {
 
   setTechnicalInfo(technicalInfo: string): this {
     this.response.error.technicalInfo = technicalInfo;
+    return this;
+  }
+
+  setUnknownError(error: unknown): this {
+    this.response.error.origin = Origin.SERVER;
+    this.response.httpStatus = StatusCodes.INTERNAL_SERVER_ERROR;
+    this.response.error.appErrorCode = AppErrorCode.UNKNOWN_ERROR;
+    this.response.error.technicalInfo =
+      error instanceof Error ? error.message : "";
     return this;
   }
 
