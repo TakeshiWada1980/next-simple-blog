@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { Category } from "@prisma/client";
 import {
   ApiSuccessResponse,
@@ -12,9 +12,17 @@ import CategoryService from "@/app/_services/categoryService";
 import AppErrorCode from "@/app/_types/AppErrorCode";
 
 // [GET] /api/admin/categories カテゴリ一覧の取得
-export const GET = async () => {
+// [GET] /api/admin/categories?sort=postcount
+export const GET = async (req: NextRequest) => {
   try {
-    const categories = await CategoryService.fetchAllCategories();
+    const { searchParams } = new URL(req.url);
+    const sort = searchParams.get("sort");
+    let categories: Category[];
+    if (sort === "postcount") {
+      categories = await CategoryService.fetchAllCategoriesWithPostCount();
+    } else {
+      categories = await CategoryService.fetchAllCategories();
+    }
     return NextResponse.json(createSuccessResponse(categories));
   } catch (error) {
     const payload = createErrorResponse(error);

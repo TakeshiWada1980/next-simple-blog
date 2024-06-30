@@ -24,4 +24,4 @@ export const isDevelopmentEnv =
   process.env.NEXT_PUBLIC_IS_DEVELOPMENT_ENV === "true";
 
 // API取得時の遅延時間（ミリ秒）
-export const apiDelay = isDevelopmentEnv ? 2000 : 0;
+export const apiDelay = isDevelopmentEnv ? 150 : 0;

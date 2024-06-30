@@ -35,14 +35,16 @@ const Post: React.FC<Props> = ({ id }) => {
   return (
     <div className="mt-5 flex flex-col justify-center">
       {/* サムネイル */}
-      <Image
-        className="rounded-lg border border-stone-300"
-        src={thumbnail.url}
-        alt="サムネイル画像"
-        width={thumbnail.width}
-        height={thumbnail.height}
-        priority
-      />
+      <div className="flex justify-center">
+        <Image
+          className="rounded-lg border border-stone-300"
+          src={thumbnail.url}
+          alt="サムネイル画像"
+          width={thumbnail.width}
+          height={thumbnail.height}
+          priority
+        />
+      </div>
       {/* 日付 & カテゴリ*/}
       <div className="sm:px-4">
         {/* 日付 & カテゴリ*/}

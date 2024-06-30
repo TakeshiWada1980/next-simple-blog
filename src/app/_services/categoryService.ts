@@ -12,6 +12,25 @@ class CategoryService {
     });
   }
 
+  // [GET] すべて取得（投稿数付き）
+  public static async fetchAllCategoriesWithPostCount(): Promise<Category[]> {
+    const categories = await prisma.category.findMany({
+      include: { posts: { select: { id: true } } },
+    });
+    const categoriesWithPostCount = categories
+      .map((category) => {
+        return {
+          id: category.id,
+          name: category.name,
+          createdAt: category.createdAt,
+          updatedAt: category.updatedAt,
+          postCount: category.posts.length,
+        };
+      })
+      .sort((a, b) => b.postCount - a.postCount);
+    return categoriesWithPostCount;
+  }
+
   // [POST] 新規作成
   public static async insertCategory(
     category: CategoryRequest.Payload
