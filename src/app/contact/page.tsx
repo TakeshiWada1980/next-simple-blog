@@ -6,7 +6,7 @@ import validationSchema from "./_types/ValidationSchema";
 import submissionResponse from "./_types/SubmissionResponse";
 import formData from "./_types/FormBody";
 import { contactApiEndpoint } from "@/app/_utils/envConfig";
-import delayedPostFetcher from "@/app/_utils/delayedPostFetcher";
+import { delayedPostFetcher } from "@/app/_utils/delayedPostFetcher";
 import FetchLoading from "@/app/_components/elements/FetchLoading";
 import ErrorMessage from "@/app/_components/elements/ErrorMessage";
 import cn from "classnames";
@@ -48,7 +48,7 @@ const styles = {
 };
 
 // 動作確認のために、応答遅延を設定した fetcher を使用
-const fetcher = delayedPostFetcher<formData, submissionResponse>(2000);
+const postFetcher = delayedPostFetcher<formData, submissionResponse>();
 
 const Contact = () => {
   // prettier-ignore
@@ -57,9 +57,10 @@ const Contact = () => {
   } = useForm<formData>({ mode: "onChange",resolver: zodResolver(validationSchema)});
 
   const onSubmit = async (data: formData) => {
-    // console.log(JSON.stringify(data)); // フォームの入力内容を確認(デバッグ用)
+    console.log(JSON.stringify(data)); // フォームの入力内容を確認(デバッグ用)
     try {
-      const res = await fetcher(contactApiEndpoint, data);
+      const res = await postFetcher(contactApiEndpoint, data);
+      console.log(res);
       if (res.message === "success!") {
         console.log(`フォーム送信成功 \n${JSON.stringify(res)}`);
         alert("フォーム送信が完了しました。");

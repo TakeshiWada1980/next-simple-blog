@@ -18,7 +18,7 @@ const Post: React.FC<Props> = ({ id }) => {
 
   // Fetch failed
   if (error) {
-    return <FetchError apiEndpoint={endpoint} error={error} />;
+    return <FetchError apiEndpoint={endpoint} message={error.message} />;
   }
 
   // Fetch in progress

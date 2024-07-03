@@ -48,8 +48,8 @@ const PageContainer = ({ children }: Props) => {
         setIsAdminMenuOpen={setIsAdminMenuOpen}
         adminMenuButtonRef={adminMenuButtonRef}
       />
-      <article className="container mx-auto md:w-2/3 xl:w-1/2">
-        <div className="relative min-h-screen px-3 mt-16">
+      <main className="container mx-auto md:w-2/3 xl:w-1/2">
+        <div className="relative h-full px-3 mt-16">
           <div>{children}</div>
         </div>
         <AdminMenu
@@ -57,7 +57,7 @@ const PageContainer = ({ children }: Props) => {
           setIsOpen={setIsAdminMenuOpen}
           adminMenuRef={adminMenuRef}
         />
-      </article>
+      </main>
     </>
   );
 };

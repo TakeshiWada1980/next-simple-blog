@@ -25,6 +25,10 @@ export const GET = getPost;
 export const PUT = async (req: NextRequest, { params: { id } }: Params) => {
   try {
     const body: PostRequest.Payload = await req.json();
+
+    // const token = req.headers.get("Authorization") ?? "";
+    // console.log(token);
+
     body.title = body.title ? body.title.trim() : "";
     body.thumbnailUrl = body.thumbnailUrl ? body.thumbnailUrl.trim() : "";
     const validatedBody = PostRequest.validationSchema.parse(body);

@@ -1,10 +1,5 @@
 import axios from "axios";
 
-/**
- * 遅延時間後にデータを返すFetcherを得る高階関数
- * @param number
- * @returns (url: string) => Promise<Response>
- */
 const delayedGetFetcher = <Response>(
   delay: number = 0,
   apiKey: string = ""

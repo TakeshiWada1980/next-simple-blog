@@ -1,6 +1,6 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import { faPenNib } from "@fortawesome/free-solid-svg-icons";
 import cn from "classnames";
 
 interface Props {
@@ -13,7 +13,7 @@ const AdminMenuButton: React.FC<Props> = (props) => {
   const { isMenuOpen, setIsMenuOpen, buttonRef } = props;
   const style = cn(
     "px-3 py-1",
-    "text-sm font-bold",
+    "font-bold",
     "text-slate-800 bg-slate-300 border border-slate-800",
     "hover:border-slate-300",
     "rounded-md",
@@ -27,7 +27,7 @@ const AdminMenuButton: React.FC<Props> = (props) => {
 
   return (
     <button ref={buttonRef} className={style} onClick={onClick}>
-      <FontAwesomeIcon className="mr-1" icon={faUser} />
+      <FontAwesomeIcon className="mr-1" icon={faPenNib} />
       管理
     </button>
   );

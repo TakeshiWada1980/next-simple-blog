@@ -24,7 +24,7 @@ const Header: React.FC<Props> = ({
           Blog
         </Link>
         <div className="space-x-4">
-          <Link href="/contact" className="py-3 font-bold">
+          <Link href="/contact" className="py-3">
             <FontAwesomeIcon className="mr-2" icon={faEnvelope} />
             お問い合わせ
           </Link>

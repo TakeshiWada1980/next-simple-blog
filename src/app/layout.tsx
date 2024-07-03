@@ -10,6 +10,13 @@ import "./globals.css";
 import type { Metadata } from "next";
 import PageContainer from "@/app/_components/PageContainer";
 
+import { M_PLUS_Rounded_1c } from "next/font/google";
+const BaseFont = M_PLUS_Rounded_1c({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Next Simple Blog",
   description: "This blog is an exercise in learning Next.js.",
@@ -22,7 +29,7 @@ interface Props {
 const RootLayout = ({ children }: Props) => {
   return (
     <html lang="ja">
-      <body className="">
+      <body className={BaseFont.className}>
         <PageContainer>{children}</PageContainer>
       </body>
     </html>
