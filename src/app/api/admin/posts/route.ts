@@ -23,12 +23,8 @@ export const POST = async (req: NextRequest) => {
   try {
     const body: PostRequest.Payload = await req.json();
 
-    // タイトルとサムネイルURLの前後の空白を削除
-    body.title = body.title ? body.title.trim() : "";
-    body.thumbnailUrl = body.thumbnailUrl ? body.thumbnailUrl.trim() : "";
-
     // バリデーションに問題があれば z.ZodError が Throw
-    const validatedBody = PostRequest.validationSchema.parse(body);
+    const validatedBody = PostRequest.serverValidationSchema.parse(body);
 
     // DB関連で問題があればエラーが Throw
     const insertedPost = await PostService.insertPostWithCategories(

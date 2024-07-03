@@ -1,11 +1,12 @@
 "use client";
 
-import React, { ReactNode, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import useGetRequest from "@/app/_hooks/useGetRequest";
 import FetchError from "@/app/_components/elements/FetchError";
 import FetchLoading from "@/app/_components/elements/FetchLoading";
 import composeApiErrorMessage from "@/app/_utils/composeApiErrorMsg";
 import PostWithCategory from "@/app/admin/posts/_types/PostWithCategory";
+import CategoryWithPostCount from "@/app/admin/posts/_types/CategoryWithPostCount";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PostRequest from "@/app/_types/PostRequest";
@@ -18,6 +19,10 @@ import {
   WebApiHeaders,
   Fetcher,
 } from "@/app/_utils/delayedPutFetcher";
+import CategoryToggleButton from "../_components/CategoryToggleButton";
+import ClearButton from "../_components/ClearButton";
+import SubmitButton from "../_components/SubmitButton";
+import { set } from "date-fns";
 
 type Params = {
   id: string;
@@ -29,7 +34,7 @@ const styles = {
   container: "flex mt-6 flex-col md:flex-row w-full",
 
   // labelのスタイル
-  label: "w-full md:w-2/12 md:mt-3 mb-2",
+  label: "w-full md:w-2/12 md:mt-3 mb-2 font-bold",
 
   // input要素とvalidateMsg(p)要素のコンテナ
   subContainer: "w-full md:w-10/12",
@@ -43,20 +48,6 @@ const styles = {
 
   // 検証エラー表示用のスタイル pタグに適用
   validationMessage: "text-red-500 text-sm mt-1",
-
-  // 「送信」と「クリア」の共通のボタンスタイル
-  button: "px-4 py-2 font-bold rounded-md",
-
-  // 「送信」ボタンのスタイル
-  submitButton: "bg-slate-600 hover:bg-slate-800 text-white",
-
-  // 「クリア」ボタンのスタイル
-  clearButton:
-    "bg-slate-300 hover:bg-slate-400 text-slate-700 hover:text-slate-50",
-
-  // 「送信」と「クリア」の共通のボタンスタイル（無効時）
-  disabledButton:
-    "bg-gray-100 text-gray-400 hover:bg-gray-100 hover:text-gray-400 hover:cursor-not-allowed",
 };
 
 const putFetcher: Fetcher<
@@ -70,45 +61,77 @@ const putFetcher: Fetcher<
 >();
 
 const page: React.FC<{ params: Params }> = ({ params }) => {
-  const url = `/api/admin/posts/${params.id}`;
-  const { data, error } = useGetRequest<PostWithCategory>(url);
+  const postApiEndpoint = `/api/admin/posts/${params.id}`;
+  const categoriesApiEndpoint = `/api/admin/categories?sort=postcount`;
+
+  // prettier-ignore
+  const { data: categoriesData, error: categoriesGetError } = 
+    useGetRequest<CategoryWithPostCount[]>(categoriesApiEndpoint);
+  const { data: postData, error: postGetError } =
+    useGetRequest<PostWithCategory>(postApiEndpoint);
 
   const title = "記事の編集";
+
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
+  const [categoryPostCounts, setCategoryPostCounts] = useState<
+    { id: number; postCount: number }[]
+  >([]);
 
   const {
     reset,
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<PostRequest.Payload>({
     mode: "onChange",
-    resolver: zodResolver(PostRequest.validationSchema),
+    resolver: zodResolver(PostRequest.clientValidationSchema),
   });
 
   useEffect(() => {
-    if (data) {
-      const post = data.data;
+    if (postData) {
+      const post = postData.data;
       reset({
         title: post?.title,
         content: post?.content,
         thumbnailUrl: post?.thumbnailUrl,
         categories: post?.categories.map((c) => c.category),
       });
+      setSelectedCategoryIds(post?.categories.map((c) => c.category.id) || []);
     }
-  }, [data, reset]);
+    if (categoriesData) {
+      if (categoriesData.data) {
+        setCategoryPostCounts(
+          categoriesData.data.map((c) => ({
+            id: c.id,
+            postCount: c.postCount,
+          }))
+        );
+      }
+    }
+  }, [postData, categoriesData, reset]);
 
   const handleReset = () => {
     reset();
+    setSelectedCategoryIds(
+      postData?.data?.categories.map((c) => c.category.id) || []
+    );
   };
 
-  if (error) {
-    return (
-      <PageWrapper title={title}>
-        <FetchError apiEndpoint={url} message={composeApiErrorMessage(error)} />
-      </PageWrapper>
-    );
+  if (postGetError || categoriesGetError) {
+    const error = postGetError || categoriesGetError;
+    if (error) {
+      return (
+        <PageWrapper title={title}>
+          <FetchError
+            apiEndpoint={postApiEndpoint}
+            message={composeApiErrorMessage(error)}
+          />
+        </PageWrapper>
+      );
+    }
   }
-  if (!data) {
+  if (!postData || !categoriesData) {
     return (
       <PageWrapper title={title}>
         <FetchLoading msg="記事一覧を読み込んでいます..." />
@@ -120,11 +143,43 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
     console.log("■" + JSON.stringify(data));
     try {
       const headers = { Authorization: "token-token" };
-      const res = await putFetcher(url, data, headers);
+      const res = await putFetcher(postApiEndpoint, data, headers);
       console.log("■" + JSON.stringify(res));
     } catch (error) {
       alert(`フォーム送信失敗\n${error}`);
     }
+  };
+
+  const toggleCategorySelection = (categoryId: number) => {
+    let newSelectedCategories: number[] = [];
+    if (selectedCategoryIds.includes(categoryId)) {
+      newSelectedCategories = selectedCategoryIds.filter(
+        (c) => c !== categoryId
+      );
+      setCategoryPostCounts(
+        categoryPostCounts.map((c) => {
+          if (c.id === categoryId) {
+            return { id: c.id, postCount: c.postCount - 1 };
+          }
+          return c;
+        })
+      );
+    } else {
+      newSelectedCategories = [...selectedCategoryIds, categoryId];
+      setCategoryPostCounts(
+        categoryPostCounts.map((c) => {
+          if (c.id === categoryId) {
+            return { id: c.id, postCount: c.postCount + 1 };
+          }
+          return c;
+        })
+      );
+    }
+    setSelectedCategoryIds(newSelectedCategories);
+    setValue(
+      "categories",
+      newSelectedCategories.map((c) => ({ id: c, name: "" }))
+    );
   };
 
   return (
@@ -183,31 +238,35 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
             <ErrorMessage message={errors.thumbnailUrl?.message} />
           </div>
         </div>
-        {/* クリアボタンと送信ボタン */}
-        <div className="mt-4 flex justify-center space-x-4">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className={cn(
-              styles.button,
-              styles.submitButton,
-              isSubmitting && styles.disabledButton
-            )}
-          >
-            送信
-          </button>
-          <button
-            type="button"
-            disabled={isSubmitting}
-            className={cn(
-              styles.button,
-              styles.clearButton,
-              isSubmitting && styles.disabledButton
-            )}
+
+        {/* カテゴリ */}
+        <div className={styles.container}>
+          <label htmlFor="categories" className={styles.label}>
+            カテゴリ
+          </label>
+          <div className={styles.subContainer}>
+            <div className="ml-2 flex flex-wrap md:mt-3">
+              {categoriesData.data?.map((c) => (
+                <CategoryToggleButton
+                  key={c.id}
+                  category={c}
+                  selectedCategoryIds={selectedCategoryIds}
+                  categoryPostCounts={categoryPostCounts}
+                  toggleCategorySelection={toggleCategorySelection}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* 送信ボタン と 編集を元に戻すボタン */}
+        <div className="mt-8 flex justify-center space-x-4">
+          <SubmitButton isSubmitting={isSubmitting} />
+          <ClearButton
+            label="編集を元に戻す"
+            isSubmitting={isSubmitting}
             onClick={handleReset}
-          >
-            編集の取り消し
-          </button>
+          />
         </div>
       </form>
     </PageWrapper>

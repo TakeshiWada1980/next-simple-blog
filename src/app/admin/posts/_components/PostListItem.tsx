@@ -34,6 +34,7 @@ const PostListItem: React.FC<Props> = (props) => {
   const isSelected = post.id === selectedPostId;
   const buttonStyle = cn(
     "border rounded-md px-2 py-1 text-sm bg-red-500 text-white tracking-wider",
+    "flex-nowrap w-20",
     "animate-jump",
     isSelected ? "block" : "hidden"
   );
@@ -46,11 +47,11 @@ const PostListItem: React.FC<Props> = (props) => {
           <div className="text-xs flex items-baseline mt-1 text-slate-500">
             <FontAwesomeIcon icon={faCalendarDays} className="mr-1" />
             <div>{format(post.createdAt, fmt)}</div>
-            <div className="ml-2 flex items-center space-x-1">
+            <div className="ml-2 flex flex-wrap items-center">
               {post.categories.map((c) => (
                 <div
                   key={c.category.id}
-                  className="px-2 border rounded-md  border-slate-500"
+                  className="px-2 mr-1 border rounded-md border-slate-500"
                 >
                   {c.category.name}
                 </div>

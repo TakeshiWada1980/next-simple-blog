@@ -1,21 +1,47 @@
 import { z } from "zod";
 
-// リクエストデータのバリデーションスキーマ
-const requiredMsg = (field: string, type: string) =>
-  `${type}型の値を持つフィールド '${field}' が存在しません。`;
-const minMsg = (item: string, min: number) =>
-  `フィールド '${item}' には${min}文字以上を設定してください。`;
+type MsgType = "server" | "client";
 
-const categoryRequestValidationSchema = z.object({
-  name: z
-    .string({ message: requiredMsg("name", "string") })
-    .min(1, minMsg("name", 1)),
-});
+const createValidationSchema = (t: MsgType) => {
+  return z.object({
+    name: z
+      .string({ message: msgsMap.name.required[t] })
+      .transform((v) => v.trim())
+      .refine((val) => val.length >= 2, {
+        message: msgsMap.name.min[t](2),
+      }),
+  });
+};
 
-type CategoryRequestPayload = z.infer<typeof categoryRequestValidationSchema>;
+const msgsMap = {
+  name: {
+    required: {
+      server: "'string型' の値を持つフィールド 'title' が存在しません。",
+      client: "[NO DATA]",
+    },
+    min: {
+      server: (n: number) =>
+        `フィールド 'title' は、前後の空白文字を除いて ${n}文字以上 が必要です。`,
+      client: (n: number) =>
+        `必須入力項目です。前後の空白文字を除いて ${n}文字以上 を入力してください。`,
+    },
+  },
+};
+
+export const categoryRequestSeverValidationSchema = createValidationSchema(
+  "server" as MsgType
+);
+export const categoryRequestClientValidationSchema = createValidationSchema(
+  "client" as MsgType
+);
+
+type CategoryRequestPayload = z.infer<
+  typeof categoryRequestSeverValidationSchema
+>;
 
 class CategoryRequest {
-  static validationSchema = categoryRequestValidationSchema;
+  static serverValidationSchema = categoryRequestSeverValidationSchema;
+  static clientValidationSchema = categoryRequestClientValidationSchema;
 }
 
 namespace CategoryRequest {

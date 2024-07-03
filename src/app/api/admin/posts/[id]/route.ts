@@ -29,9 +29,7 @@ export const PUT = async (req: NextRequest, { params: { id } }: Params) => {
     // const token = req.headers.get("Authorization") ?? "";
     // console.log(token);
 
-    body.title = body.title ? body.title.trim() : "";
-    body.thumbnailUrl = body.thumbnailUrl ? body.thumbnailUrl.trim() : "";
-    const validatedBody = PostRequest.validationSchema.parse(body);
+    const validatedBody = PostRequest.serverValidationSchema.parse(body);
     const updatedCategory = await PostService.updatePost(id, validatedBody);
     return NextResponse.json(createSuccessPutResponse(updatedCategory));
   } catch (error) {

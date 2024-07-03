@@ -1,51 +1,103 @@
 import { z } from "zod";
 
-// リクエストボディのバリデーションスキーマ
-const requiredMsg = (field: string, type: string) =>
-  `${type}型の値を持つフィールド '${field}' が存在しません。`;
-const minMsg = (item: string, min: number) =>
-  `フィールド '${item}' には${min}文字以上を設定してください。..`;
+type MsgType = "server" | "client";
 
-export const postRequestValidationSchema = z.object({
-  title: z
-    .string({ message: requiredMsg("title", "string") })
-    .min(1, minMsg("title", 1)),
-  content: z
-    .string({ message: requiredMsg("content", "string") })
-    .min(1, minMsg("content", 1)),
-  thumbnailUrl: z
-    .string({ message: requiredMsg("thumbnailUrl", "string") })
-    .url("フィールド 'thumbnailUrl' は無効なURLです。"),
-  categories: z
-    .array(
-      z.object({
-        id: z
-          .number({
-            message:
-              "フィールド 'categories' の要素に" + requiredMsg("id", "number"),
-          })
-          .int(
-            "フィールド 'categories' の要素のフィールド 'id' は整数である必要があります。"
-          ),
-        name: z.string(),
-      })
-    )
-    .refine(
-      (categories) => {
-        const uniqueIds = new Set(categories.map((category) => category.id));
-        return uniqueIds.size === categories.length;
-      },
-      {
-        message:
-          "フィールド 'categories' の要素に、'id' が重複するものがあります。",
-      }
-    ),
-});
+const createValidationSchema = (t: MsgType) => {
+  return z.object({
+    title: z
+      .string({ message: msgsMap.title.required[t] })
+      .transform((v) => v.trim())
+      .refine((val) => val.length >= 2, {
+        message: msgsMap.title.min[t](2),
+      }),
+    content: z
+      .string({ message: msgsMap.content.required[t] })
+      .transform((v) => v.trim())
+      .refine((val) => val.length >= 2, {
+        message: msgsMap.content.min[t](2),
+      }),
+    thumbnailUrl: z
+      .string({ message: msgsMap.thumbnailUrl.required[t] })
+      .url(msgsMap.thumbnailUrl.url[t]),
+    categories: z
+      .array(
+        z.object({
+          id: z
+            .number({ message: msgsMap.categories.required[t] })
+            .int(msgsMap.categories.required[t]),
+          name: z.string(),
+        })
+      )
+      .refine(
+        (categories) => {
+          const uniqueIds = new Set(categories.map((category) => category.id));
+          return uniqueIds.size === categories.length;
+        },
+        { message: msgsMap.categories.duplication[t] }
+      ),
+  });
+};
 
-type PostRequestPayload = z.infer<typeof postRequestValidationSchema>;
+const msgsMap = {
+  title: {
+    required: {
+      server: "'string型' の値を持つフィールド 'title' が存在しません。",
+      client: "[NO DATA]",
+    },
+    min: {
+      server: (n: number) =>
+        `フィールド 'title' は、前後の空白文字を除いて ${n}文字以上 が必要です。`,
+      client: (n: number) =>
+        `必須入力項目です。前後の空白文字を除いて ${n}文字以上 を入力してください。`,
+    },
+  },
+  content: {
+    required: {
+      server: "'string型' の値を持つフィールド 'content' が存在しません。",
+      client: "[NO DATA]",
+    },
+    min: {
+      server: (n: number) =>
+        `フィールド 'content' は、前後の空白文字を除いて ${n}文字以上 が必要です。`,
+      client: (n: number) =>
+        `必須入力項目です。前後の空白文字を除いて ${n} 文字以上を入力してください。`,
+    },
+  },
+  thumbnailUrl: {
+    required: {
+      server: "'string型' の値を持つフィールド 'thumbnailUrl' が存在しません。",
+      client: "[NO DATA]",
+    },
+    url: {
+      server: "フィールド 'thumbnailUrl' は、無効なURLです。",
+      client: "必須入力項目です。有効なURLを入力してください。",
+    },
+  },
+  categories: {
+    required: {
+      server:
+        "フィールド 'categories' の要素に 'int型' の値を持つフィールド 'id' が存在しません。",
+      client: "[NO DATA]",
+    },
+    duplication: {
+      server: "フィールド 'categories' に、'id' の重複する要素があります。",
+      client: "[NO DATA]",
+    },
+  },
+};
+
+export const postRequestSeverValidationSchema = createValidationSchema(
+  "server" as MsgType
+);
+export const postRequestClientValidationSchema = createValidationSchema(
+  "client" as MsgType
+);
+
+type PostRequestPayload = z.infer<typeof postRequestSeverValidationSchema>;
 
 class PostRequest {
-  static validationSchema = postRequestValidationSchema;
+  static serverValidationSchema = postRequestSeverValidationSchema;
+  static clientValidationSchema = postRequestClientValidationSchema;
 }
 
 namespace PostRequest {

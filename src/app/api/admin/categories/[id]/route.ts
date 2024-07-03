@@ -19,8 +19,7 @@ type Params = { params: { id: string } };
 export const PUT = async (req: NextRequest, { params: { id } }: Params) => {
   try {
     const body: CategoryRequest.Payload = await req.json();
-    body.name = body.name ? body.name.trim() : "";
-    const validatedBody = CategoryRequest.validationSchema.parse(body);
+    const validatedBody = CategoryRequest.serverValidationSchema.parse(body);
     const updatedCategory = await CategoryService.updateCategory(
       id,
       validatedBody

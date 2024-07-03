@@ -18,11 +18,8 @@ export const POST = async (req: NextRequest) => {
   try {
     const body: CategoryRequest.Payload = await req.json();
 
-    // カテゴリ名の前後の空白を削除
-    body.name = body.name ? body.name.trim() : "";
-
     // バリデーションに問題があれば z.ZodError が Throw
-    const validatedBody = CategoryRequest.validationSchema.parse(body);
+    const validatedBody = CategoryRequest.serverValidationSchema.parse(body);
 
     // DB関連で問題があればエラーが Throw
     const insertedCategory = await CategoryService.insertCategory(
