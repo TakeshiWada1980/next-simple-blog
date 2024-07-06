@@ -5,11 +5,11 @@ export type WebApiHeaders = {
   Authorization: string;
 };
 
-export type Fetcher<RequestBody, Response, Headers> = (
-  url: string,
-  data: RequestBody,
-  headers?: Headers
-) => Promise<Response>;
+// export type Fetcher<RequestBody, Response, Headers> = (
+//   url: string,
+//   data: RequestBody,
+//   headers?: Headers
+// ) => Promise<Response>;
 
 export const delayedPostFetcher = <
   RequestBody,

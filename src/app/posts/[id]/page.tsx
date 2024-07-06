@@ -9,9 +9,9 @@ type Params = {
 
 const Page: React.FC<{ params: Params }> = ({ params }) => {
   return (
-    <main>
+    <article>
       <Post id={params.id} />
-    </main>
+    </article>
   );
 };
 

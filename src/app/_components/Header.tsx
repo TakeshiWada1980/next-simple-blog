@@ -18,13 +18,13 @@ const Header: React.FC<Props> = ({
   adminMenuButtonRef,
 }) => {
   return (
-    <header className="fixed top-0 left-0 right-0 bg-slate-800 text-white px-3 sm:px-0 shadow-md z-50">
+    <header className="fixed top-0 left-0 right-0 bg-slate-800 text-white px-3 sm:px-0 shadow-md z-10">
       <nav className="container mx-auto flex justify-between items-center md:w-2/3 xl:w-1/2">
-        <Link href="/" className="py-3 font-bold">
-          Blog
+        <Link href="/" className="py-3 font-bold" tabIndex={-1}>
+          Next.js Simple Blog
         </Link>
         <div className="space-x-4">
-          <Link href="/contact" className="py-3">
+          <Link href="/contact" className="py-3" tabIndex={-1}>
             <FontAwesomeIcon className="mr-2" icon={faEnvelope} />
             お問い合わせ
           </Link>

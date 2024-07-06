@@ -1,14 +1,17 @@
+"use client";
+
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import cn from "classnames";
 
 type Props = {
+  label: string;
   isSubmitting: boolean;
 };
 
 const SubmitButton: React.FC<Props> = (props) => {
-  const { isSubmitting } = props;
+  const { label, isSubmitting } = props;
 
   return (
     <button
@@ -17,8 +20,8 @@ const SubmitButton: React.FC<Props> = (props) => {
       className={cn(
         "flex items-center tracking-wider",
         "px-4 py-2 font-bold rounded-md",
-        "text-white bg-slate-600",
-        "hover:bg-slate-800",
+        "text-white bg-slate-500",
+        "hover:bg-slate-700",
         isSubmitting && [
           "bg-slate-800 text-gray-400",
           "hover:cursor-not-allowed",
@@ -33,7 +36,7 @@ const SubmitButton: React.FC<Props> = (props) => {
           isSubmitting ? "block" : "hidden"
         )}
       />
-      {!isSubmitting ? "送信" : "送信中..."}
+      {!isSubmitting ? label : `${label}中...`}
     </button>
   );
 };

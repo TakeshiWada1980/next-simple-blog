@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import ErrorResponseBuilder from "@/app/api/_helpers/errorResponseBuilder";
 import { StatusCodes } from "@/app/_utils/extendedStatusCodes";
-import { Origin, AppErrorCode } from "@/app/_types/ApiResponse";
+import { Origin } from "@/app/_types/ApiResponse";
+import AppErrorCode from "@/app/_types/AppErrorCode";
 
 // 共通処理
 const handleRequest = (req: NextRequest) => {

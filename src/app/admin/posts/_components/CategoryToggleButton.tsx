@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import CategoryWithPostCount from "@/app/admin/posts/_types/CategoryWithPostCount";
 import cn from "classnames";
@@ -16,6 +18,7 @@ const CategoryToggleButton: React.FC<Props> = (props) => {
     categoryPostCounts,
     toggleCategorySelection,
   } = props;
+
   const postCount = categoryPostCounts.find((c) => c.id === data.id)?.postCount;
   return (
     <button

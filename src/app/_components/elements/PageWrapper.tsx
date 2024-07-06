@@ -2,12 +2,12 @@ import React, { ReactNode } from "react";
 import PageTitleHeader from "@/app/_components/elements/PageTitleHeader";
 
 type Props = {
-  title: string;
+  pageTitle: string;
   children: ReactNode;
 };
 
 const PageWrapper: React.FC<Props> = (props) => {
-  const { title, children } = props;
+  const { pageTitle: title, children } = props;
   return (
     <article>
       <PageTitleHeader>{title}</PageTitleHeader>

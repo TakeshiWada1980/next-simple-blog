@@ -12,7 +12,7 @@ import {
   faTag,
   faTags,
 } from "@fortawesome/free-solid-svg-icons";
-import AdminMenuLink from "./elements/AdminMeneLink";
+import AdminMenuLink from "./elements/AdminMenuLink";
 
 interface Props {
   isOpen: boolean;

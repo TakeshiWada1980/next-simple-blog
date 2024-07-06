@@ -17,6 +17,9 @@ const main = async () => {
   const cNextJs = await p.category.create({ data: { name: "Next.js" } });
   const cCSharp = await p.category.create({ data: { name: "C#" } });
   const cAzure = await p.category.create({ data: { name: "Azure" } });
+  const cCOBOL = await p.category.create({ data: { name: "COBOL" } });
+  const cBasic = await p.category.create({ data: { name: "Basic" } });
+  const cFSharp = await p.category.create({ data: { name: "F#" } });
 
   // ブログ記事データの作成
   const post1 = await p.post.create({
@@ -24,7 +27,7 @@ const main = async () => {
       title: "砂浜のノマドライフ",
       content:
         "今日は久しぶりに海岸でのんびり過ごした。<br>仕事を持ち出して、ビーチでノートパソコンを広げたけれど...",
-      thumbnailUrl: "https://placehold.jp/800x400.png",
+      thumbnailUrl: "https://placehold.jp/1600x400.png",
       categories: {
         create: [{ categoryId: cReact.id }, { categoryId: cNextJs.id }],
       },
@@ -48,7 +51,7 @@ const main = async () => {
       title: "没頭の代償",
       content:
         "雪原でPC作業に没頭していました。<br>夢中になりすぎて周りが見えなくなってしまいました。気づけばすっかり雪に埋もれ...",
-      thumbnailUrl: "https://placehold.jp/800x400.png",
+      thumbnailUrl: "https://placehold.jp/800x200.png",
       categories: {
         create: [{ categoryId: cCSharp.id }, { categoryId: cAzure.id }],
       },

@@ -6,8 +6,8 @@ const composeApiErrorMsg = (error: AxiosError<ApiErrorResponse>): string => {
   if (resBody) {
     let msg = "";
     msg += `[${error.response?.status}] ${error.response?.statusText}<br>`;
-    msg += `(AppErrorCode: ${resBody.error.appErrorCode})<br>`;
-    msg += resBody.error.technicalInfo;
+    msg += `(AppErrorCode: ${resBody.error?.appErrorCode})<br>`;
+    msg += resBody.error?.technicalInfo;
     return msg;
   }
   return error.message; // Axiosによるエラーメッセージ
