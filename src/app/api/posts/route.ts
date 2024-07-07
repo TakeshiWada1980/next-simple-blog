@@ -11,8 +11,6 @@ export const GET = async () => {
   try {
     const posts = await PostService.fetchAllPosts();
     return NextResponse.json(createSuccessResponse(posts));
-    // const payload = createErrorResponse(new Error("Error Test"));
-    // return NextResponse.json(payload, { status: payload.httpStatus });
   } catch (error) {
     const payload = createErrorResponse(error);
     return NextResponse.json(payload, { status: payload.httpStatus });

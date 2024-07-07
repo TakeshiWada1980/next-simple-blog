@@ -39,6 +39,7 @@ export const PUT = async (req: NextRequest, { params: { id } }: Params) => {
 };
 
 // [DELETE] /api/admin/posts/:id
+// NOTE:`req: NextRequest` がないと param が適切に取得できないので注意
 export const DELETE = async (req: NextRequest, { params: { id } }: Params) => {
   try {
     await PostService.deletePost(id);

@@ -6,6 +6,7 @@ import {
 import { StatusCodes } from "@/app/_utils/extendedStatusCodes";
 import AppErrorCode from "@/app/_types/AppErrorCode";
 
+// APIエラーレスポンスのビルダークラス
 class ErrorResponseBuilder {
   private response: ApiErrorResponse;
   private readonly defaultErrorDetails: ErrorDetails;

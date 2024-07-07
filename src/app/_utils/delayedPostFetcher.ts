@@ -1,15 +1,11 @@
 import axios from "axios";
 import { isDevelopmentEnv, apiDelay } from "../_utils/envConfig";
 
+// 「お問い合わせ」用。今後破棄予定
+
 export type WebApiHeaders = {
   Authorization: string;
 };
-
-// export type Fetcher<RequestBody, Response, Headers> = (
-//   url: string,
-//   data: RequestBody,
-//   headers?: Headers
-// ) => Promise<Response>;
 
 export const delayedPostFetcher = <
   RequestBody,

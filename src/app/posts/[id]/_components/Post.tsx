@@ -2,10 +2,9 @@
 
 import { format } from "date-fns";
 import DOMPurify from "isomorphic-dompurify";
-import { useEffect, useState } from "react";
 
 import Image from "next/image";
-import Tag from "@/app/_components/elements/Tag";
+import CategoryTag from "@/app/posts/_components/CategoryTag";
 import FetchError from "@/app/_components/elements/FetchError";
 import FetchLoading from "@/app/_components/elements/FetchLoading";
 
@@ -27,14 +26,16 @@ const Post: React.FC<{ id: string }> = ({ id }) => {
     return <FetchLoading msg="記事を読み込んでいます..." />;
   }
 
-  const post = data.data as NonNullable<PostWithCategory>;
-
   // Fetch succeeded
+  const post = data.data as NonNullable<PostWithCategory>;
   const createdAt = format(post.createdAt, "yyyy/MM/dd HH:mm");
   const content = DOMPurify.sanitize(post.content, { ALLOWED_TAGS: ["br"] });
   const thumbnail = post.thumbnailUrl;
   const categories = post.categories.map((c) => c.category.name);
   const title = post.title;
+
+  //FIXME:画像が`next.config.mjs`に登録されていないと
+  //ページ全体が「Unhandled Runtime Error」を吐く
 
   return (
     <div className="mt-5 flex flex-col justify-center">
@@ -55,7 +56,7 @@ const Post: React.FC<{ id: string }> = ({ id }) => {
           <div className="text-xs text-stone-500">{createdAt}</div>
           <div className="flex items-center space-x-1">
             {categories.map((category) => (
-              <Tag name={category} key={category} />
+              <CategoryTag name={category} key={category} />
             ))}
           </div>
         </div>

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { ReactNode } from "react";
 import PageTitleHeader from "@/app/_components/elements/PageTitleHeader";
 

@@ -1,6 +1,7 @@
-import { ApiResponse, ApiSuccessResponse } from "@/app/_types/ApiResponse";
+import { ApiSuccessResponse } from "@/app/_types/ApiResponse";
 import { StatusCodes } from "@/app/_utils/extendedStatusCodes";
 
+// API成功レスポンスのビルダークラス
 class SuccessResponseBuilder<T> {
   private response: ApiSuccessResponse<T>;
 

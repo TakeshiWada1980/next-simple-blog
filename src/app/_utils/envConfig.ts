@@ -7,11 +7,6 @@ const validateURL = (url: string): string => {
   return url;
 };
 
-// ブログ記事を取得(GET)するAPIエンドポイント
-export const postsApiEndpoint = validateURL(
-  `${process.env.NEXT_PUBLIC_BLOG_API_ENDPOINT}/posts`
-);
-
 // お問い合わせ内容を送信(POST)するAPIエンドポイント
 export const contactApiEndpoint = validateURL(
   `${process.env.NEXT_PUBLIC_BUBE_API_ENDPOINT}/contacts`

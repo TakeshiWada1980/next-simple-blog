@@ -16,7 +16,8 @@ import CategoryRequest from "@/app/_types/CategoryRequest";
 type Params = { params: { id: string } };
 
 // [PUT] /api/admin/categories/:id
-export const PUT = async (req: NextRequest, { params: { id } }: Params) => {
+export const PUT = async (req: NextRequest, params: Params) => {
+  const { id } = params.params;
   try {
     const body: CategoryRequest.Payload = await req.json();
     const validatedBody = CategoryRequest.serverValidationSchema.parse(body);
@@ -32,7 +33,9 @@ export const PUT = async (req: NextRequest, { params: { id } }: Params) => {
 };
 
 // [DELETE] /api/admin/categories/:id
-export const DELETE = async (req: NextRequest, { params: { id } }: Params) => {
+// NOTE:`req: NextRequest` がないと param が適切に取得できないので注意
+export const DELETE = async (req: NextRequest, params: Params) => {
+  const { id } = params.params;
   try {
     await CategoryService.deleteCategory(id);
     return NextResponse.json(createSuccessDeleteResponse());

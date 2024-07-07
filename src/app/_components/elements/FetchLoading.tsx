@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 // https://www.tailwindcss-animated.com/configurator.html
 import cn from "classnames";
-import classNames from "classnames";
 
 type Props = {
   msg: string;

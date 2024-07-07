@@ -9,12 +9,12 @@ import { StatusCodes } from "@/app/_utils/extendedStatusCodes";
 import SuccessResponseBuilder from "@/app/api/_helpers/successResponseBuilder";
 import ErrorResponseBuilder from "@/app/api/_helpers/errorResponseBuilder";
 import PostService from "@/app/_services/postService";
-import AppErrorCode from "@/app/_types/AppErrorCode";
 
 type Params = { params: { id: string } };
 
 // [GET] /api/posts/:id
-export const GET = async (req: NextRequest, { params: { id } }: Params) => {
+export const GET = async (req: NextRequest, prams: Params) => {
+  const { id } = prams.params;
   try {
     const post = await PostService.fetchPostById(id);
     return NextResponse.json(createSuccessResponse(post));

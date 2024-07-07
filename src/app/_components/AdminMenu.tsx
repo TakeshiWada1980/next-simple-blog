@@ -2,11 +2,8 @@
 
 import React from "react";
 import cn from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faDoorOpen,
-  faUser,
-  faPenNib,
   faPenToSquare,
   faFileLines,
   faTag,

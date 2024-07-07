@@ -10,6 +10,7 @@ import {
   faTriangleExclamation,
   faSpinner,
 } from "@fortawesome/free-solid-svg-icons";
+import { isDevelopmentEnv } from "@/app/_utils/envConfig";
 
 const buttonStyle = cn(
   "border rounded-md px-2 py-1 ml-1 text-sm bg-red-400 text-white tracking-wider",
@@ -60,7 +61,7 @@ const DeleteActionDialog: React.FC<Props> = (props) => {
   const handleDeleteClick = async () => {
     setIsBusy(true);
     const res = await deleteApiCaller(endpoint);
-    console.log("■" + JSON.stringify(res.data));
+    isDevelopmentEnv && console.log("■ <<< " + JSON.stringify(res));
     handleDeleteAction({ isDone: true });
     setIsBusy(false);
     setIsDialogOpen(false);
