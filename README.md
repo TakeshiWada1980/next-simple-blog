@@ -5,7 +5,7 @@
 GitHubからプロジェクトリポジトリをクローンします。
 
 ```bash
-git git clone https://github.com/TakeshiWada1980/next-simple-blog.git hoge
+git clone https://github.com/TakeshiWada1980/next-simple-blog.git hoge
 cd hoge
 ```
 
@@ -20,7 +20,7 @@ cd hoge
 プロジェクトの依存関係をインストールします。`package.json` に記載されている依存関係をすべてインストールします。
 
 ```bash
-npm npm install
+npm install
 ```
 
 ### Prismaのセットアップ
