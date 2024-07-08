@@ -6,7 +6,7 @@ import { Origin } from "@/app/_types/ApiResponse";
 import AppErrorCode from "@/app/_types/AppErrorCode";
 
 // 存在しないエンドポイントへのリクエストを処理する
-// FIXME: /api/admin/hogehoge のような不正なパスは補足できない。
+// FIXME: /api/admin/hogehoge のような不正パスは補足できない。
 // 共通処理
 const handleRequest = (req: NextRequest) => {
   const originalPath = req.nextUrl.pathname;

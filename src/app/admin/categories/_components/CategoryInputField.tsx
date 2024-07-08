@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import ErrorMessage from "@/app/_components/elements/ErrorMessage";
 import { UseFormRegister, FieldErrors } from "react-hook-form";

@@ -38,7 +38,7 @@ const main = async () => {
     data: {
       title: "ピクニックバスケットとノートPC",
       content:
-        "素敵な一日でした。<br>晴れた空の下、青々とした草原にシートを広げ今日は久しぶりに海岸でのんびり過ごした。<br>仕事を持ち出して、ビーチでノートパソコンを広げたけれど...",
+        "素敵な一日でした。<br>晴れた空の下、青々とした草原にシートを広げゆったりとピクニックを楽しみました。自然の中で心地よい風を感じながら、ノートパソコンを開き...",
       thumbnailUrl: "https://placehold.jp/800x400.png",
       categories: {
         create: [{ categoryId: cReact.id }],
