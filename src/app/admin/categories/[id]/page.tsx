@@ -132,9 +132,6 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
         <FormProvider {...methods}>
           <CategoryInputField
             nameLabel={`新しい名前`}
-            // isSubmitting={methods.formState.isSubmitting}
-            // register={methods.register}
-            // errors={methods.formState.errors}
             serverErrorMessage={serverErrorMessage}
             categoryWithPostCountList={categoryWithPostCountList}
             categoriesGetEndpoint={categoriesGetEndpoint}

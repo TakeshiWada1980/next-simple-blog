@@ -7,7 +7,6 @@ import cn from "classnames";
 type Props = {
   category: CategoryWithPostCount;
   selectedCategoryIds: number[];
-  categoryPostCounts: { id: number; postCount: number }[];
   toggleCategorySelection: (id: number) => void;
 };
 
@@ -15,11 +14,9 @@ const CategoryToggleButton: React.FC<Props> = (props) => {
   const {
     category: data,
     selectedCategoryIds,
-    categoryPostCounts,
     toggleCategorySelection,
   } = props;
 
-  const postCount = categoryPostCounts.find((c) => c.id === data.id)?.postCount;
   return (
     <button
       type="button"
@@ -36,7 +33,7 @@ const CategoryToggleButton: React.FC<Props> = (props) => {
       )}
     >
       <div>{data.name}</div>
-      <div className="text-xs ml-1">({postCount})</div>
+      <div className="text-xs ml-1">({data.postCount})</div>
     </button>
   );
 };

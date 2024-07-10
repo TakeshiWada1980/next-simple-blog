@@ -29,7 +29,6 @@ const styles = {
 type Props = {
   categoryWithPostCountList: CategoryWithPostCount[];
   selectedCategoryIds: number[];
-  categoryPostCounts: { id: number; postCount: number }[];
   toggleCategorySelection: (categoryId: number) => void;
 };
 
@@ -40,7 +39,6 @@ const PostInputField: React.FC<Props> = (props) => {
   const {
     categoryWithPostCountList,
     selectedCategoryIds,
-    categoryPostCounts,
     toggleCategorySelection,
   } = props;
   return (
@@ -108,7 +106,6 @@ const PostInputField: React.FC<Props> = (props) => {
                 key={c.id}
                 category={c}
                 selectedCategoryIds={selectedCategoryIds}
-                categoryPostCounts={categoryPostCounts}
                 toggleCategorySelection={toggleCategorySelection}
               />
             ))}

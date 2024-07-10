@@ -13,10 +13,11 @@ import PageWrapper from "@/app/_components/elements/PageWrapper";
 import { isDevelopmentEnv } from "@/app/_utils/envConfig";
 
 // ウェブAPI関連
-import { ApiResponse } from "@/app/_types/ApiResponse";
+import { ApiResponse, ApiSuccessResponse } from "@/app/_types/ApiResponse";
 import createPostRequest from "@/app/_utils/createPostRequest";
 import ApiRequestHeader from "@/app/_types/ApiRequestHeader";
 import PostRequest from "@/app/_types/PostRequest";
+import { useSWRConfig } from "swr";
 
 // フォーム構成関連
 import ClearButton from "@/app/admin/_components/ClearButton";
@@ -33,6 +34,8 @@ const page: React.FC = () => {
   const pageTitle = "記事の新規作成";
   const router = useRouter();
 
+  const { mutate } = useSWRConfig();
+
   // 記事投稿、カテゴリ一覧取得のAPIエンドポイント
   const postApiEndpoint = `/api/admin/posts`;
   const categoriesApiEndpoint = `/api/admin/categories?sort=postcount`;
@@ -41,11 +44,11 @@ const page: React.FC = () => {
   const { data: categoriesData, error: categoriesGetError } = 
     useGetRequest<CategoryWithPostCount[]>(categoriesApiEndpoint);
 
-  // カテゴリ選択(複数)の状態と数を管理するステート
+  // カテゴリ選択とカテゴリ投稿数の初期値を管理するステート
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
-  const [categoryPostCounts, setCategoryPostCounts] = useState<
-    { id: number; postCount: number }[]
-  >([]);
+  const [initCategoryPostCounts, setInitCategoryPostCounts] = useState<
+    CategoryWithPostCount[] | null
+  >(null);
 
   // フォーム状態管理
   const methods = useForm<PostRequest.Payload>({
@@ -53,31 +56,38 @@ const page: React.FC = () => {
     resolver: zodResolver(PostRequest.clientValidationSchema),
   });
 
-  // カテゴリ選択状態をリセット
+  // カテゴリ選択の状態をリセット
   const resetSelectedCategoryIds = () => {
     setSelectedCategoryIds([]);
+
+    if (!categoriesData || !initCategoryPostCounts) {
+      // カテゴリ投稿数の初期値が取得できてない場合は何もしない
+      return;
+    }
+
+    const newCategoriesData = { ...categoriesData };
+    newCategoriesData.data = initCategoryPostCounts;
+    mutate(categoriesApiEndpoint, newCategoriesData, { revalidate: false });
   };
 
-  // カテゴリ選択数をリセット
-  const resetCategoryPostCounts = () => {
-    setCategoryPostCounts(
-      categoriesData?.data?.map((c) => ({
-        id: c.id,
-        postCount: c.postCount,
-      })) || []
-    );
-  };
-
+  // カテゴリ投稿数の初期値を initCategoryPostCounts に保持するための処理
   useEffect(() => {
-    categoriesData && resetCategoryPostCounts();
+    if (!initCategoryPostCounts) {
+      if (categoriesData?.data) {
+        setInitCategoryPostCounts(categoriesData.data);
+      }
+    }
+  }, [categoriesData]);
+
+  // フォームの初期化
+  useEffect(() => {
     methods.reset({
       title: "",
       content: "",
       thumbnailUrl: "",
-      // カテゴリ初期値が null だとエラーになるため空配列をセット
       categories: [],
     });
-  }, [categoriesData, methods.reset]);
+  }, [methods.reset]);
 
   // カテゴリ一覧 の取得に失敗した場合
   if (categoriesGetError) {
@@ -107,7 +117,6 @@ const page: React.FC = () => {
   const handleResetAction = () => {
     methods.reset();
     resetSelectedCategoryIds();
-    resetCategoryPostCounts();
   };
 
   // [投稿]ボタンの押下処理
@@ -126,31 +135,35 @@ const page: React.FC = () => {
     }
   };
 
+  let newCategoriesData = { ...categoriesData } as ApiSuccessResponse<
+    CategoryWithPostCount[]
+  >;
+
   // カテゴリ選択のトグル処理
   const toggleCategorySelection = (categoryId: number) => {
     let newSelectedCategories: number[] = [];
+
     if (selectedCategoryIds.includes(categoryId)) {
       newSelectedCategories = selectedCategoryIds.filter(
         (c) => c !== categoryId
       );
-      setCategoryPostCounts(
-        categoryPostCounts.map((c) => {
-          if (c.id === categoryId) {
-            return { id: c.id, postCount: c.postCount - 1 };
-          }
-          return c;
-        })
-      );
+      newCategoriesData.data = newCategoriesData.data.map((c) => {
+        if (c.id === categoryId) {
+          return { ...c, postCount: c.postCount - 1 };
+        }
+        return c;
+      });
+      mutate(categoriesApiEndpoint, newCategoriesData, { revalidate: false });
     } else {
       newSelectedCategories = [...selectedCategoryIds, categoryId];
-      setCategoryPostCounts(
-        categoryPostCounts.map((c) => {
-          if (c.id === categoryId) {
-            return { id: c.id, postCount: c.postCount + 1 };
-          }
-          return c;
-        })
-      );
+
+      newCategoriesData.data = newCategoriesData.data.map((c) => {
+        if (c.id === categoryId) {
+          return { ...c, postCount: c.postCount + 1 };
+        }
+        return c;
+      });
+      mutate(categoriesApiEndpoint, newCategoriesData, { revalidate: false });
     }
     setSelectedCategoryIds(newSelectedCategories);
     methods.setValue(
@@ -171,7 +184,6 @@ const page: React.FC = () => {
           <PostInputField
             categoryWithPostCountList={categoryWithPostCountList}
             selectedCategoryIds={selectedCategoryIds}
-            categoryPostCounts={categoryPostCounts}
             toggleCategorySelection={toggleCategorySelection}
           />
 

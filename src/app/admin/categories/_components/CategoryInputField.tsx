@@ -34,9 +34,6 @@ const styles = {
 
 type Props = {
   nameLabel: string;
-  // isSubmitting: boolean;
-  // register: UseFormRegister<CategoryRequest.Payload>;
-  // errors: FieldErrors<CategoryRequest.Payload>;
   serverErrorMessage?: string | null;
   categoryWithPostCountList: CategoryWithPostCount[] | null | undefined;
   categoriesGetEndpoint: string;
@@ -49,9 +46,6 @@ const CategoryInputField: React.FC<Props> = (props) => {
   const errors = formState.errors as FieldErrors<CategoryRequest.Payload>;
   const {
     nameLabel,
-    // isSubmitting,
-    // register,
-    // errors,
     serverErrorMessage,
     categoryWithPostCountList,
     categoriesGetEndpoint,
