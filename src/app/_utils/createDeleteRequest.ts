@@ -1,7 +1,7 @@
 import axios from "axios";
 import { isDevelopmentEnv, apiDelay } from "@/app/_utils/envConfig";
 
-export const createDelayedDeleteRequest = <
+export const createDeleteRequest = <
   Response,
   Headers extends Record<string, string> | undefined = undefined
 >() => {
@@ -16,4 +16,4 @@ export const createDelayedDeleteRequest = <
   };
 };
 
-export default createDelayedDeleteRequest;
+export default createDeleteRequest;

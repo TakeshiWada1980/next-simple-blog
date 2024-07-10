@@ -6,17 +6,15 @@ import useGetRequest from "@/app/_hooks/useGetRequest";
 import FetchError from "@/app/_components/elements/FetchError";
 import FetchLoading from "@/app/_components/elements/FetchLoading";
 import composeApiErrorMessage from "@/app/_utils/composeApiErrorMsg";
-import PostWithCategory from "@/app/admin/posts/_types/PostWithCategory";
 import CategoryWithPostCount from "@/app/admin/posts/_types/CategoryWithPostCount";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import ErrorMessage from "@/app/_components/elements/ErrorMessage";
 import PageWrapper from "@/app/_components/elements/PageWrapper";
 import { isDevelopmentEnv } from "@/app/_utils/envConfig";
 
 // ウェブAPI関連
 import { ApiResponse } from "@/app/_types/ApiResponse";
-import createDelayedPostRequest from "@/app/_utils/createDelayedPostRequest";
+import createPostRequest from "@/app/_utils/createPostRequest";
 import ApiRequestHeader from "@/app/_types/ApiRequestHeader";
 import PostRequest from "@/app/_types/PostRequest";
 
@@ -25,7 +23,7 @@ import ClearButton from "@/app/admin/_components/ClearButton";
 import SubmitButton from "@/app/admin/_components/SubmitButton";
 import PostInputField from "../_components/PostInputField";
 
-const postApiCaller = createDelayedPostRequest<
+const postApiCaller = createPostRequest<
   PostRequest.Payload,
   ApiResponse<PostRequest.Payload>,
   ApiRequestHeader
@@ -50,13 +48,7 @@ const page: React.FC = () => {
   >([]);
 
   // フォーム状態管理
-  const {
-    reset,
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors, isSubmitting },
-  } = useForm<PostRequest.Payload>({
+  const methods = useForm<PostRequest.Payload>({
     mode: "onChange",
     resolver: zodResolver(PostRequest.clientValidationSchema),
   });
@@ -78,14 +70,14 @@ const page: React.FC = () => {
 
   useEffect(() => {
     categoriesData && resetCategoryPostCounts();
-    reset({
+    methods.reset({
       title: "",
       content: "",
       thumbnailUrl: "",
       // カテゴリ初期値が null だとエラーになるため空配列をセット
       categories: [],
     });
-  }, [categoriesData, reset]);
+  }, [categoriesData, methods.reset]);
 
   // カテゴリ一覧 の取得に失敗した場合
   if (categoriesGetError) {
@@ -113,7 +105,7 @@ const page: React.FC = () => {
 
   // [リセット]ボタンの押下処理
   const handleResetAction = () => {
-    reset();
+    methods.reset();
     resetSelectedCategoryIds();
     resetCategoryPostCounts();
   };
@@ -161,7 +153,7 @@ const page: React.FC = () => {
       );
     }
     setSelectedCategoryIds(newSelectedCategories);
-    setValue(
+    methods.setValue(
       "categories",
       newSelectedCategories.map((c) => ({ id: c, name: "" }))
     );
@@ -173,27 +165,22 @@ const page: React.FC = () => {
 
   return (
     <PageWrapper pageTitle={pageTitle}>
-      <form noValidate onSubmit={handleSubmit(onSubmit)}>
-        {/* タイトル・本文・画像・カテゴリに関するフォーム */}
-        <PostInputField
-          isSubmitting={isSubmitting}
-          register={register}
-          errors={errors}
-          categoryWithPostCountList={categoryWithPostCountList}
-          selectedCategoryIds={selectedCategoryIds}
-          categoryPostCounts={categoryPostCounts}
-          toggleCategorySelection={toggleCategorySelection}
-        />
-
-        {/* 投稿ボタン と リセットボタン */}
-        <div className="mt-8 flex justify-center space-x-4">
-          <SubmitButton label="投稿" isSubmitting={isSubmitting} />
-          <ClearButton
-            label="リセット"
-            isSubmitting={isSubmitting}
-            onClick={handleResetAction}
+      <form noValidate onSubmit={methods.handleSubmit(onSubmit)}>
+        <FormProvider {...methods}>
+          {/* タイトル・本文・画像・カテゴリに関するフォーム */}
+          <PostInputField
+            categoryWithPostCountList={categoryWithPostCountList}
+            selectedCategoryIds={selectedCategoryIds}
+            categoryPostCounts={categoryPostCounts}
+            toggleCategorySelection={toggleCategorySelection}
           />
-        </div>
+
+          {/* 投稿ボタン と リセットボタン */}
+          <div className="mt-8 flex justify-center space-x-4">
+            <SubmitButton label="投稿" />
+            <ClearButton label="リセット" onClick={handleResetAction} />
+          </div>
+        </FormProvider>
       </form>
     </PageWrapper>
   );

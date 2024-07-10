@@ -6,26 +6,20 @@ import { faPenNib } from "@fortawesome/free-solid-svg-icons";
 import cn from "classnames";
 
 interface Props {
-  isMenuOpen: boolean;
-  setIsMenuOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onClick: () => void;
   buttonRef: React.RefObject<HTMLButtonElement>;
 }
 
 const AdminMenuButton: React.FC<Props> = (props) => {
-  const { isMenuOpen, setIsMenuOpen, buttonRef } = props;
+  const { onClick, buttonRef } = props;
   const style = cn(
     "px-3 py-1",
     "font-bold",
     "text-slate-800 bg-slate-300 border border-slate-800",
     "hover:border-slate-300",
     "rounded-md",
-    "animate-pulse animate-twice animate-duration-[1200ms] animate-delay-1000 animate-ease-in",
-    isMenuOpen ? "" : ""
+    "animate-pulse animate-twice animate-duration-[1200ms] animate-delay-1000 animate-ease-in"
   );
-
-  const onClick = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
 
   return (
     <button ref={buttonRef} className={style} onClick={onClick}>

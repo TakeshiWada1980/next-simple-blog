@@ -2,7 +2,7 @@
 
 import React from "react";
 import ErrorMessage from "@/app/_components/elements/ErrorMessage";
-import { UseFormRegister, FieldErrors } from "react-hook-form";
+import { UseFormRegister, FieldErrors, useFormContext } from "react-hook-form";
 import CategoryWithPostCount from "@/app/admin/posts/_types/CategoryWithPostCount";
 import CategoryTag from "./CategoryTag";
 import FetchError from "@/app/_components/elements/FetchError";
@@ -34,9 +34,9 @@ const styles = {
 
 type Props = {
   nameLabel: string;
-  isSubmitting: boolean;
-  register: UseFormRegister<CategoryRequest.Payload>;
-  errors: FieldErrors<CategoryRequest.Payload>;
+  // isSubmitting: boolean;
+  // register: UseFormRegister<CategoryRequest.Payload>;
+  // errors: FieldErrors<CategoryRequest.Payload>;
   serverErrorMessage?: string | null;
   categoryWithPostCountList: CategoryWithPostCount[] | null | undefined;
   categoriesGetEndpoint: string;
@@ -44,11 +44,14 @@ type Props = {
 };
 
 const CategoryInputField: React.FC<Props> = (props) => {
+  const { register, formState } = useFormContext();
+  const isSubmitting = formState.isSubmitting;
+  const errors = formState.errors as FieldErrors<CategoryRequest.Payload>;
   const {
     nameLabel,
-    isSubmitting,
-    register,
-    errors,
+    // isSubmitting,
+    // register,
+    // errors,
     serverErrorMessage,
     categoryWithPostCountList,
     categoriesGetEndpoint,
@@ -76,9 +79,7 @@ const CategoryInputField: React.FC<Props> = (props) => {
       </div>
 
       <div className={styles.container}>
-        <label htmlFor="categories" className={styles.label}>
-          既存のカテゴリ
-        </label>
+        <div className={styles.label}>既存カテゴリ</div>
 
         <div className={styles.subContainer}>
           <div className="flex flex-wrap md:mt-3 gap-0">

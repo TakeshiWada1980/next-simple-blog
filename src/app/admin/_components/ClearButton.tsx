@@ -2,10 +2,10 @@
 
 import React from "react";
 import cn from "classnames";
+import { useFormContext } from "react-hook-form";
 
 type Props = {
   label: string;
-  isSubmitting: boolean;
   onClick: () => void;
 };
 
@@ -17,7 +17,9 @@ const style = [
 ];
 
 const ClearButton: React.FC<Props> = (props) => {
-  const { label, isSubmitting, onClick } = props;
+  const { label, onClick } = props;
+  const { formState } = useFormContext();
+  const isSubmitting = formState.isSubmitting;
 
   return (
     <button

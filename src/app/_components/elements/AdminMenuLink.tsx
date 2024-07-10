@@ -10,7 +10,7 @@ interface Props {
   title: string;
   href: string;
   icon: IconDefinition;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onClick: () => void;
 }
 
 const linkStyle = cn(
@@ -30,13 +30,9 @@ const iconStyle = cn(
 );
 
 const AdminMenuLink: React.FC<Props> = (props) => {
-  const { title, href, icon, setIsOpen } = props;
-  const closeMenu = () => {
-    setIsOpen(false);
-  };
-
+  const { title, href, icon, onClick } = props;
   return (
-    <Link href={href} className={linkStyle} onClick={closeMenu}>
+    <Link href={href} className={linkStyle} onClick={onClick}>
       <FontAwesomeIcon className={iconStyle} icon={icon} />
       {title}
     </Link>

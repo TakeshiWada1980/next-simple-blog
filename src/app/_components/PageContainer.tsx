@@ -8,12 +8,16 @@ type Props = {
   children: React.ReactNode;
 };
 
-const MOUSE_DOWN = "mousedown";
-
 const PageContainer = ({ children }: Props) => {
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState<boolean>(false);
   const adminMenuRef = useRef<HTMLDivElement>(null);
   const adminMenuButtonRef = useRef<HTMLButtonElement>(null);
+
+  const handleEscKeydown = useCallback((e: KeyboardEvent) => {
+    if (e.key === "Escape") {
+      setIsAdminMenuOpen(false);
+    }
+  }, []);
 
   const handleClickOutside = useCallback((e: MouseEvent | TouchEvent) => {
     if (
@@ -30,16 +34,19 @@ const PageContainer = ({ children }: Props) => {
     if (isAdminMenuOpen) {
       document.addEventListener("click", handleClickOutside);
       document.addEventListener("touchstart", handleClickOutside);
+      document.addEventListener("keydown", handleEscKeydown);
     } else {
       document.removeEventListener("click", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleEscKeydown);
     }
 
     return () => {
       document.removeEventListener("click", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("keydown", handleEscKeydown);
     };
-  }, [isAdminMenuOpen, handleClickOutside]);
+  }, [isAdminMenuOpen, handleClickOutside, handleEscKeydown]);
 
   return (
     <>

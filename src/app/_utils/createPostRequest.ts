@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { isDevelopmentEnv, apiDelay } from "@/app/_utils/envConfig";
 
-const createDelayedPutRequest = <
+const createPostRequest = <
   RequestBody,
   Response,
   Headers extends Record<string, string> | undefined = undefined
@@ -14,7 +14,7 @@ const createDelayedPutRequest = <
     const options = headers ? { headers } : {};
     let res: AxiosResponse<Response, any> | null = null;
     try {
-      res = await axios.put<Response>(url, data, options);
+      res = await axios.post<Response>(url, data, options);
       res = res as AxiosResponse<Response, any>;
       // 開発環境では、動作検証のためにDelayを設定
       if (isDevelopmentEnv) {
@@ -30,4 +30,4 @@ const createDelayedPutRequest = <
   };
 };
 
-export default createDelayedPutRequest;
+export default createPostRequest;

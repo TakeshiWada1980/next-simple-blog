@@ -8,14 +8,14 @@ import FetchLoading from "@/app/_components/elements/FetchLoading";
 import composeApiErrorMessage from "@/app/_utils/composeApiErrorMsg";
 import PostWithCategory from "@/app/admin/posts/_types/PostWithCategory";
 import CategoryWithPostCount from "@/app/admin/posts/_types/CategoryWithPostCount";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import PageWrapper from "@/app/_components/elements/PageWrapper";
 import { isDevelopmentEnv } from "@/app/_utils/envConfig";
 
 // ウェブAPI関連
 import { ApiResponse } from "@/app/_types/ApiResponse";
-import createDelayedPutRequest from "@/app/_utils/createDelayedPutRequest";
+import createPutRequest from "@/app/_utils/createPutRequest";
 import ApiRequestHeader from "@/app/_types/ApiRequestHeader";
 import PostRequest from "@/app/_types/PostRequest";
 
@@ -24,7 +24,7 @@ import ClearButton from "@/app/admin/_components/ClearButton";
 import SubmitButton from "@/app/admin/_components/SubmitButton";
 import PostInputField from "../_components/PostInputField";
 
-const putApiCaller = createDelayedPutRequest<
+const putApiCaller = createPutRequest<
   PostRequest.Payload,
   ApiResponse<PostRequest.Payload>,
   ApiRequestHeader
@@ -54,14 +54,7 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
     { id: number; postCount: number }[]
   >([]);
 
-  // フォーム状態管理
-  const {
-    reset,
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors, isSubmitting },
-  } = useForm<PostRequest.Payload>({
+  const methods = useForm<PostRequest.Payload>({
     mode: "onChange",
     resolver: zodResolver(PostRequest.clientValidationSchema),
   });
@@ -85,7 +78,7 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
 
   useEffect(() => {
     if (postData) {
-      reset({
+      methods.reset({
         title: postData.data?.title,
         content: postData.data?.content,
         thumbnailUrl: postData.data?.thumbnailUrl,
@@ -94,7 +87,7 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
       resetSelectedCategoryIds();
     }
     categoriesData && resetCategoryPostCounts();
-  }, [postData, categoriesData, reset]);
+  }, [postData, categoriesData, methods.reset]);
 
   // 記事単体 もしくは カテゴリ一覧 の取得に失敗した場合
   if (postGetError || categoriesGetError) {
@@ -122,7 +115,7 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
 
   // [編集を元に戻す]ボタンの押下処理
   const handleResetAction = () => {
-    reset();
+    methods.reset();
     resetSelectedCategoryIds();
     resetCategoryPostCounts();
   };
@@ -167,7 +160,7 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
       );
     }
     setSelectedCategoryIds(newSelectedCategories);
-    setValue(
+    methods.setValue(
       "categories",
       newSelectedCategories.map((c) => ({ id: c, name: "" }))
     );
@@ -183,27 +176,21 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
 
   return (
     <PageWrapper pageTitle={pageTitle}>
-      <form noValidate onSubmit={handleSubmit(onSubmit)}>
-        {/* タイトル・本文・画像・カテゴリに関するフォーム */}
-        <PostInputField
-          isSubmitting={isSubmitting}
-          register={register}
-          errors={errors}
-          categoryWithPostCountList={categoryWithPostCountList}
-          selectedCategoryIds={selectedCategoryIds}
-          categoryPostCounts={categoryPostCounts}
-          toggleCategorySelection={toggleCategorySelection}
-        />
-
-        {/* 更新ボタン と 編集を元に戻すボタン */}
-        <div className="mt-8 flex justify-center space-x-4">
-          <SubmitButton label="更新" isSubmitting={isSubmitting} />
-          <ClearButton
-            label="編集を元に戻す"
-            isSubmitting={isSubmitting}
-            onClick={handleResetAction}
+      <form noValidate onSubmit={methods.handleSubmit(onSubmit)}>
+        <FormProvider {...methods}>
+          {/* タイトル・本文・画像・カテゴリに関するフォーム */}
+          <PostInputField
+            categoryWithPostCountList={categoryWithPostCountList}
+            selectedCategoryIds={selectedCategoryIds}
+            categoryPostCounts={categoryPostCounts}
+            toggleCategorySelection={toggleCategorySelection}
           />
-        </div>
+          {/* 更新ボタン と 編集を元に戻すボタン */}
+          <div className="mt-8 flex justify-center space-x-4">
+            <SubmitButton label="更新" />
+            <ClearButton label="編集を元に戻す" onClick={handleResetAction} />
+          </div>
+        </FormProvider>
       </form>
     </PageWrapper>
   );

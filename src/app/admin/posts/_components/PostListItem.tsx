@@ -4,11 +4,7 @@ import React from "react";
 import PostWithCategory from "../_types/PostWithCategory";
 import { format } from "date-fns";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faCalendarDays,
-  faEllipsis,
-  faTrashCan,
-} from "@fortawesome/free-solid-svg-icons";
+import { faCalendarDays, faEllipsis } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 import cn from "classnames";
 import { ApiResponse } from "@/app/_types/ApiResponse";

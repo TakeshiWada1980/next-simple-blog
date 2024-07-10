@@ -17,7 +17,8 @@ interface Props {
   adminMenuRef: React.RefObject<HTMLDivElement>;
 }
 
-const AdminMenu: React.FC<Props> = ({ isOpen, setIsOpen, adminMenuRef }) => {
+const AdminMenu: React.FC<Props> = (props: Props) => {
+  const { isOpen, setIsOpen, adminMenuRef } = props;
   const menuStyle = cn(
     "fixed bottom-0",
     "container mx-auto md:w-2/3 xl:w-1/2",
@@ -29,6 +30,7 @@ const AdminMenu: React.FC<Props> = ({ isOpen, setIsOpen, adminMenuRef }) => {
     "overflow-auto",
     isOpen ? "translate-y-0" : "translate-y-full"
   );
+  const closeMenu = () => setIsOpen(false);
 
   return (
     <div ref={adminMenuRef} className={menuStyle}>
@@ -36,41 +38,41 @@ const AdminMenu: React.FC<Props> = ({ isOpen, setIsOpen, adminMenuRef }) => {
         <h2 className="text-xl text-center tracking-wide pb-3 mt-2 border-b border-slate-300">
           管理者メニュー
         </h2>
-        <nav className="flex flex-col mt-2">
-          <div className="my-2">
+        <nav className="flex flex-col gap-2">
+          <div className="pt-2">
             <AdminMenuLink
               title="記事の新規作成"
               href="/admin/posts/new"
               icon={faPenToSquare}
-              setIsOpen={setIsOpen}
+              onClick={closeMenu}
             />
             <AdminMenuLink
               title="記事の一覧 (編集・削除)"
               href="/admin/posts"
               icon={faFileLines}
-              setIsOpen={setIsOpen}
+              onClick={closeMenu}
             />
           </div>
-          <div className="my-2 pt-2 border-t border-slate-300">
+          <div className="pt-2 border-t border-slate-300">
             <AdminMenuLink
               title="カテゴリの新規作成"
               href="/admin/categories/new"
               icon={faTag}
-              setIsOpen={setIsOpen}
+              onClick={closeMenu}
             />
             <AdminMenuLink
               title="カテゴリの一覧 (編集・削除)"
               href="/admin/categories"
               icon={faTags}
-              setIsOpen={setIsOpen}
+              onClick={closeMenu}
             />
           </div>
-          <div className="my-2 pt-2 border-t border-slate-300">
+          <div className="pt-2 border-t border-slate-300">
             <AdminMenuLink
               title="ログアウト"
               href="/"
               icon={faDoorOpen}
-              setIsOpen={setIsOpen}
+              onClick={closeMenu}
             />
           </div>
         </nav>

@@ -11,11 +11,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCirclePlus, faSpinner } from "@fortawesome/free-solid-svg-icons";
 import PageWrapper from "@/app/_components/elements/PageWrapper";
 import { ApiResponse } from "@/app/_types/ApiResponse";
-import createDelayedDeleteRequest from "@/app/_utils/createDelayedDeleteRequest";
+import createDeleteRequest from "@/app/_utils/createDeleteRequest";
 import { useSWRConfig } from "swr";
 import CategoryListItem from "./_components/CategoryListItem";
 
-const deleteApiCaller = createDelayedDeleteRequest<ApiResponse<null>>();
+const deleteApiCaller = createDeleteRequest<ApiResponse<null>>();
 
 const page = () => {
   const url = "/api/admin/categories?sort=postcount";

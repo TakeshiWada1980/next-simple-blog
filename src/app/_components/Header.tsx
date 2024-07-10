@@ -17,6 +17,10 @@ const Header: React.FC<Props> = ({
   setIsAdminMenuOpen,
   adminMenuButtonRef,
 }) => {
+  const onClick = () => {
+    setIsAdminMenuOpen(!isAdminMenuOpen);
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 bg-slate-800 text-white px-3 sm:px-0 shadow-md z-10">
       <nav className="container mx-auto flex justify-between items-center md:w-2/3 xl:w-1/2">
@@ -28,11 +32,7 @@ const Header: React.FC<Props> = ({
             <FontAwesomeIcon className="mr-2" icon={faEnvelope} />
             お問い合わせ
           </Link>
-          <AdminMenuButton
-            isMenuOpen={isAdminMenuOpen}
-            setIsMenuOpen={setIsAdminMenuOpen}
-            buttonRef={adminMenuButtonRef}
-          />
+          <AdminMenuButton onClick={onClick} buttonRef={adminMenuButtonRef} />
         </div>
       </nav>
     </header>

@@ -4,18 +4,17 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import useGetRequest from "@/app/_hooks/useGetRequest";
 import CategoryWithPostCount from "@/app/admin/posts/_types/CategoryWithPostCount";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import PageWrapper from "@/app/_components/elements/PageWrapper";
 import { isDevelopmentEnv } from "@/app/_utils/envConfig";
 import FetchLoading from "@/app/_components/elements/FetchLoading";
 import FetchError from "@/app/_components/elements/FetchError";
 import composeApiErrorMessage from "@/app/_utils/composeApiErrorMsg";
+import { useForm, FormProvider } from "react-hook-form";
 
 // ウェブAPI関連
 import { ApiResponse } from "@/app/_types/ApiResponse";
-import createDelayedPutRequest from "@/app/_utils/createDelayedPutRequest";
-import createDelayedDeleteRequest from "@/app/_utils/createDelayedDeleteRequest";
+import createPutRequest from "@/app/_utils/createPutRequest";
+import createDeleteRequest from "@/app/_utils/createDeleteRequest";
 import ApiRequestHeader from "@/app/_types/ApiRequestHeader";
 import CategoryRequest from "@/app/_types/CategoryRequest";
 import AppErrorCode from "@/app/_types/AppErrorCode";
@@ -24,10 +23,11 @@ import AppErrorCode from "@/app/_types/AppErrorCode";
 import SubmitButton from "@/app/admin/_components/SubmitButton";
 import CategoryInputField from "../_components/CategoryInputField";
 import DeleteActionDialog from "@/app/_components/elements/DeleteActionDialog";
+import useCreateCategoryForm from "../_hooks/useCreateCategoryForm";
 
-const deleteApiCaller = createDelayedDeleteRequest<ApiResponse<null>>();
+const deleteApiCaller = createDeleteRequest<ApiResponse<null>>();
 
-const putApiCaller = createDelayedPutRequest<
+const putApiCaller = createPutRequest<
   CategoryRequest.Payload,
   ApiResponse<CategoryRequest.Payload>,
   ApiRequestHeader
@@ -53,32 +53,7 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
 
   const categoryWithPostCountList = categoriesData?.data;
 
-  const useFormOptions = {
-    // prettier-ignore
-    mode: "onChange" as | "onChange" | "onBlur" | "onSubmit" | "onTouched" | "all",
-    resolver: zodResolver(CategoryRequest.clientValidationSchema),
-  };
-
-  if (categoryWithPostCountList) {
-    const forbiddenNames = categoryWithPostCountList.map((c) => c.name);
-    const extendedNameValidation =
-      CategoryRequest.clientValidationSchema.shape.name.refine(
-        (n) => !forbiddenNames.includes(n),
-        { message: `この名前を持ったカテゴリは既に存在します。` }
-      );
-    useFormOptions.resolver = zodResolver(
-      CategoryRequest.clientValidationSchema.extend({
-        name: extendedNameValidation,
-      })
-    );
-  }
-
-  // フォーム状態管理
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<CategoryRequest.Payload>(useFormOptions);
+  const methods = useCreateCategoryForm(categoryWithPostCountList);
 
   // カテゴリ一覧 の取得に失敗した場合
   if (categoriesGetError) {
@@ -153,21 +128,25 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
 
   return (
     <PageWrapper pageTitle={pageTitle}>
-      <form noValidate onSubmit={handleSubmit(onSubmit)}>
-        <CategoryInputField
-          nameLabel={`新しい名前`}
-          isSubmitting={isSubmitting}
-          register={register}
-          errors={errors}
-          serverErrorMessage={serverErrorMessage}
-          categoryWithPostCountList={categoryWithPostCountList}
-          categoriesGetEndpoint={categoriesGetEndpoint}
-          categoriesGetError={categoriesGetError}
-        />
+      <form noValidate onSubmit={methods.handleSubmit(onSubmit)}>
+        <FormProvider {...methods}>
+          <CategoryInputField
+            nameLabel={`新しい名前`}
+            // isSubmitting={methods.formState.isSubmitting}
+            // register={methods.register}
+            // errors={methods.formState.errors}
+            serverErrorMessage={serverErrorMessage}
+            categoryWithPostCountList={categoryWithPostCountList}
+            categoriesGetEndpoint={categoriesGetEndpoint}
+            categoriesGetError={categoriesGetError}
+          />
+        </FormProvider>
 
         {/* 新規作成ボタン */}
         <div className="mt-5 flex justify-center space-x-4">
-          <SubmitButton label="名前を変更" isSubmitting={isSubmitting} />
+          <FormProvider {...methods}>
+            <SubmitButton label="名前を変更" />
+          </FormProvider>
           <DeleteActionDialog
             className="px-3 font-bold text-base"
             title={deleteConfTitle}

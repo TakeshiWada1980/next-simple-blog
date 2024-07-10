@@ -3,15 +3,17 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { useFormContext } from "react-hook-form";
 import cn from "classnames";
 
 type Props = {
   label: string;
-  isSubmitting: boolean;
 };
 
 const SubmitButton: React.FC<Props> = (props) => {
-  const { label, isSubmitting } = props;
+  const { label } = props;
+  const { formState } = useFormContext();
+  const isSubmitting = formState.isSubmitting;
 
   return (
     <button

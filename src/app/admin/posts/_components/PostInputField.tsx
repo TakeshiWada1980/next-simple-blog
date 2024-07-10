@@ -1,6 +1,6 @@
 import React from "react";
 import ErrorMessage from "@/app/_components/elements/ErrorMessage";
-import { useForm, UseFormRegister, FieldErrors } from "react-hook-form";
+import { FieldErrors, useFormContext } from "react-hook-form";
 import CategoryWithPostCount from "@/app/admin/posts/_types/CategoryWithPostCount";
 import CategoryToggleButton from "./CategoryToggleButton";
 
@@ -24,15 +24,9 @@ const styles = {
 
   // テキストボックスとテキストエリアののスタイル（無効時）
   disabledInput: "hover:cursor-not-allowed bg-gray-100",
-
-  // // 検証エラー表示用のスタイル pタグに適用
-  // validationMessage: "text-red-500 text-sm mt-1",
 };
 
 type Props = {
-  isSubmitting: boolean;
-  register: UseFormRegister<PostRequest.Payload>;
-  errors: FieldErrors<PostRequest.Payload>;
   categoryWithPostCountList: CategoryWithPostCount[];
   selectedCategoryIds: number[];
   categoryPostCounts: { id: number; postCount: number }[];
@@ -40,10 +34,10 @@ type Props = {
 };
 
 const PostInputField: React.FC<Props> = (props) => {
+  const { register, formState } = useFormContext();
+  const isSubmitting = formState.isSubmitting;
+  const errors = formState.errors as FieldErrors<PostRequest.Payload>;
   const {
-    isSubmitting,
-    register,
-    errors,
     categoryWithPostCountList,
     selectedCategoryIds,
     categoryPostCounts,
@@ -106,9 +100,7 @@ const PostInputField: React.FC<Props> = (props) => {
       </div>
 
       <div className={styles.container}>
-        <label htmlFor="categories" className={styles.label}>
-          カテゴリ
-        </label>
+        <div className={styles.label}>カテゴリ</div>
         <div className={styles.subContainer}>
           <div className="flex flex-wrap md:mt-3 gap-0">
             {categoryWithPostCountList.map((c) => (
