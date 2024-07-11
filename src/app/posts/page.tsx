@@ -4,9 +4,9 @@ import Posts from "./_components/Posts";
 
 const Page = () => {
   return (
-    <main>
+    <article>
       <Posts />
-    </main>
+    </article>
   );
 };
 

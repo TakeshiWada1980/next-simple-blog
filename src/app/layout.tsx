@@ -8,7 +8,14 @@ config.autoAddCss = false; /* eslint-disable import/first */
 
 import "./globals.css";
 import type { Metadata } from "next";
-import Header from "@/app/_components/Header";
+import PageContainer from "@/app/_components/PageContainer";
+
+import { M_PLUS_Rounded_1c } from "next/font/google";
+const BaseFont = M_PLUS_Rounded_1c({
+  weight: ["400", "700"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Next Simple Blog",
@@ -22,12 +29,8 @@ interface Props {
 const RootLayout = ({ children }: Props) => {
   return (
     <html lang="ja">
-      <body className="">
-        <Header />
-        <article className="container mx-auto px-3 md:w-2/3 xl:w-1/2">
-          {children}
-        </article>
-        <footer className="text-center text-sm mt-5"></footer>
+      <body className={BaseFont.className}>
+        <PageContainer>{children}</PageContainer>
       </body>
     </html>
   );

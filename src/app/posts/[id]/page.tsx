@@ -1,17 +1,15 @@
 "use client";
 
 import React from "react";
+import { useParams } from "next/navigation";
 import Post from "./_components/Post";
 
-type Params = {
-  id: string;
-};
-
-const Page: React.FC<{ params: Params }> = ({ params }) => {
+const Page: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
   return (
-    <main>
-      <Post id={params.id} />
-    </main>
+    <article>
+      <Post id={id} />
+    </article>
   );
 };
 

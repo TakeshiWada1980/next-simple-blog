@@ -1,3 +1,11 @@
+// 更新後は
+// npx prisma db push
+// npx prisma generate
+// https://miro.com/app/board/uXjVK5dcQxk=/?share_link_id=858227987907
+
+// NOTE:カラムの名称は Prisma 公式に倣って変更
+// https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -9,31 +17,31 @@ datasource db {
 
 // ブログ記事テーブル
 model Post {
-  id             Int            @id @default(autoincrement())
+  id             Int             @id @default(autoincrement())
   title          String
   content        String
   thumbnailUrl   String
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  postCategories PostCategory[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  categories     CategoriesOnPosts[]
 }
 
 // カテゴリーテーブル
 model Category {
-  id        Int            @id @default(autoincrement())
-  name      String
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-  posts     PostCategory[]
+  id        Int             @id @default(autoincrement())
+  name      String          @unique
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  posts     CategoriesOnPosts[]
 }
 
 // ブログ記事とカテゴリーを多対多で紐付ける中間テーブル
-model PostCategory {
-  id         Int      @id @default(autoincrement())
+model CategoriesOnPosts {
+  id         Int       @id @default(autoincrement())
   postId     Int
   categoryId Int
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  post       Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  category   Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 }
