@@ -12,9 +12,13 @@ import { z } from "zod";
 import PostRequest from "@/app/_types/PostRequest";
 import PostService from "@/app/_services/postService";
 import AppErrorCode from "@/app/_types/AppErrorCode";
+import {
+  validateAuthToken,
+  InvalidTokenError,
+} from "@/app/api/_helpers/validateAuthToken";
 
 // [GET] /api/admin/posts
-export const GET = async () => {
+export const GET = async (req: NextRequest) => {
   try {
     const posts = await PostService.fetchAllPosts();
     return NextResponse.json(new SuccessResponseBuilder(posts).build());
@@ -27,6 +31,7 @@ export const GET = async () => {
 // [POST] /api/admin/posts
 export const POST = async (req: NextRequest) => {
   try {
+    await validateAuthToken(req.headers.get("Authorization") ?? "");
     const body: PostRequest.Payload = await req.json();
     const validatedBody = PostRequest.serverValidationSchema.parse(body);
     const insertedPost = await PostService.insertPostWithCategories(
@@ -59,6 +64,12 @@ const createPostErrorResponse = (error: unknown): ApiErrorResponse => {
   } else if (error instanceof PostService.CategoryNotFoundError) {
     errorResponseBuilder
       .setHttpStatus(StatusCodes.BAD_REQUEST)
+      .setOrigin(Origin.CLIENT)
+      .setAppErrorCode(error.appErrorCode)
+      .setTechnicalInfo(error.message);
+  } else if (error instanceof InvalidTokenError) {
+    errorResponseBuilder
+      .setHttpStatus(StatusCodes.UNAUTHORIZED)
       .setOrigin(Origin.CLIENT)
       .setAppErrorCode(error.appErrorCode)
       .setTechnicalInfo(error.message);

@@ -12,6 +12,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { isDevelopmentEnv } from "@/app/_utils/envConfig";
 
+import useAuth from "@/app/_hooks/useAuth";
+import ApiRequestHeader from "@/app/_types/ApiRequestHeader";
+
 const buttonStyle = cn(
   "border rounded-md px-2 py-1 ml-1 text-sm bg-red-400 text-white tracking-wider",
   "flex flex-nowrap whitespace-nowrap outline-none justify-center items-center gap-2",
@@ -41,7 +44,7 @@ type Props = {
   handleDeleteAction: ({ isDone }: { isDone: boolean }) => void;
   deleteApiCaller: (
     url: string,
-    headers?: undefined
+    headers?: ApiRequestHeader
   ) => Promise<ApiResponse<null>>;
 };
 
@@ -57,11 +60,13 @@ const DeleteActionDialog: React.FC<Props> = (props) => {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
+  const apiRequestHeader = useAuth().apiRequestHeader;
 
   const handleDeleteClick = async () => {
     setIsBusy(true);
-    const res = await deleteApiCaller(endpoint);
+    const res = await deleteApiCaller(endpoint, apiRequestHeader);
     isDevelopmentEnv && console.log("■ <<< " + JSON.stringify(res));
+    // NOTE: 失敗した場合の処理をあとで追加する
     handleDeleteAction({ isDone: true });
     setIsBusy(false);
     setIsDialogOpen(false);
@@ -113,7 +118,6 @@ const DeleteActionDialog: React.FC<Props> = (props) => {
                 <div>削除</div>
               )}
             </button>
-            {/* <AlertDialog.Action asChild><button>削除</button></AlertDialog.Action> */}
           </div>
         </AlertDialog.Content>
       </AlertDialog.Portal>

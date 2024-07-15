@@ -17,13 +17,13 @@ const AdminMenuButton: React.FC<Props> = (props) => {
     "font-bold",
     "text-slate-800 bg-slate-300 border border-slate-800",
     "hover:border-slate-300",
-    "rounded-md",
+    "rounded-2xl",
     "animate-pulse animate-twice animate-duration-[1200ms] animate-delay-1000 animate-ease-in"
   );
 
   return (
     <button ref={buttonRef} className={style} onClick={onClick}>
-      <FontAwesomeIcon className="mr-1" icon={faPenNib} />
+      <FontAwesomeIcon className="mr-2" icon={faPenNib} />
       管理
     </button>
   );

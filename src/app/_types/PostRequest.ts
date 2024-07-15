@@ -19,6 +19,14 @@ const createValidationSchema = (t: MsgType) => {
     thumbnailUrl: z
       .string({ message: msgsMap.thumbnailUrl.required[t] })
       .url(msgsMap.thumbnailUrl.url[t]),
+    thumbnailImageKey: z
+      .string({
+        message: msgsMap.thumbnailImageKey.required[t],
+      })
+      .transform((v) => v.trim())
+      .refine((val) => val.length >= 1, {
+        message: msgsMap.thumbnailImageKey.min[t](1),
+      }),
     categories: z
       .array(
         z.object({
@@ -71,6 +79,18 @@ const msgsMap = {
     url: {
       server: "フィールド 'thumbnailUrl' は、無効なURLです。",
       client: "必須入力項目です。有効なURLを入力してください。",
+    },
+  },
+  thumbnailImageKey: {
+    required: {
+      server:
+        "'string型' の値を持つフィールド 'thumbnailImageKey' が存在しません。",
+      client: "必須入力項目です。有効なキーを入力してください。",
+    },
+    min: {
+      server: (n: number) =>
+        `フィールド 'thumbnailImageKey' は、必須入力項目です。`,
+      client: (n: number) => `必須入力項目です。`,
     },
   },
   categories: {

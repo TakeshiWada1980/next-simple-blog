@@ -14,12 +14,17 @@ import { ApiResponse } from "@/app/_types/ApiResponse";
 import createDeleteRequest from "@/app/_utils/createDeleteRequest";
 import { useSWRConfig } from "swr";
 import CategoryListItem from "./_components/CategoryListItem";
+import useAuth from "@/app/_hooks/useAuth";
 
 const deleteApiCaller = createDeleteRequest<ApiResponse<null>>();
 
 const page = () => {
   const url = "/api/admin/categories?sort=postcount";
-  const { data, error } = useGetRequest<CategoryWithPostCount[]>(url);
+  const apiRequestHeader = useAuth().apiRequestHeader;
+  const { data, error } = useGetRequest<CategoryWithPostCount[]>(
+    url,
+    apiRequestHeader
+  );
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(
     null
   );
@@ -58,8 +63,8 @@ const page = () => {
     );
   }
 
-  const newPostAction = () => {
-    router.push("/admin/posts/new");
+  const newCategoryAction = () => {
+    router.push("/admin/categories/new");
   };
 
   const categories = data.data;
@@ -68,7 +73,7 @@ const page = () => {
       <div className="flex justify-end">
         <button
           className="flex items-center px-2 py-1 mb-1 md:px-3 border rounded-md tracking-wider text-white bg-blue-600"
-          onClick={newPostAction}
+          onClick={newCategoryAction}
         >
           <FontAwesomeIcon icon={faCirclePlus} className="mr-2" />
           新規作成

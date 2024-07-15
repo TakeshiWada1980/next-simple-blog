@@ -3,10 +3,6 @@ import prisma from "@/lib/prisma";
 import CategoryRequest from "@/app/_types/CategoryRequest";
 import AppErrorCode from "@/app/_types/AppErrorCode";
 
-function wait(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 // [カテゴリ]対象のビジネスロジックとDB関連の処理担当のサービスクラス
 class CategoryService {
   // [GET] すべて取得
@@ -32,7 +28,6 @@ class CategoryService {
         };
       })
       .sort((a, b) => b.postCount - a.postCount);
-    await wait(3000);
     return categoriesWithPostCount;
   }
 

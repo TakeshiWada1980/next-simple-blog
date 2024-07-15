@@ -15,9 +15,9 @@ import { isDevelopmentEnv } from "@/app/_utils/envConfig";
 // ウェブAPI関連
 import { ApiResponse, ApiSuccessResponse } from "@/app/_types/ApiResponse";
 import createPostRequest from "@/app/_utils/createPostRequest";
-import ApiRequestHeader from "@/app/_types/ApiRequestHeader";
 import PostRequest from "@/app/_types/PostRequest";
 import { useSWRConfig } from "swr";
+import useAuth from "@/app/_hooks/useAuth";
 
 // フォーム構成関連
 import ClearButton from "@/app/admin/_components/ClearButton";
@@ -26,13 +26,13 @@ import PostInputField from "../_components/PostInputField";
 
 const postApiCaller = createPostRequest<
   PostRequest.Payload,
-  ApiResponse<PostRequest.Payload>,
-  ApiRequestHeader
+  ApiResponse<PostRequest.Payload>
 >();
 
 const page: React.FC = () => {
   const pageTitle = "記事の新規作成";
   const router = useRouter();
+  const apiRequestHeader = useAuth().apiRequestHeader;
 
   const { mutate } = useSWRConfig();
 
@@ -42,7 +42,7 @@ const page: React.FC = () => {
 
   // prettier-ignore
   const { data: categoriesData, error: categoriesGetError } = 
-    useGetRequest<CategoryWithPostCount[]>(categoriesApiEndpoint);
+    useGetRequest<CategoryWithPostCount[]>(categoriesApiEndpoint,apiRequestHeader);
 
   // カテゴリ選択とカテゴリ投稿数の初期値を管理するステート
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
@@ -123,13 +123,10 @@ const page: React.FC = () => {
   const onSubmit = async (data: PostRequest.Payload) => {
     isDevelopmentEnv && console.log("■ >>> " + JSON.stringify(data));
     try {
-      const headers = {
-        Authorization: "token-token",
-        "Content-Type": "application/json",
-      };
-      const res = await postApiCaller(postApiEndpoint, data, headers);
+      const res = await postApiCaller(postApiEndpoint, data, apiRequestHeader);
       isDevelopmentEnv && console.log("■ <<< " + JSON.stringify(res));
-      router.push("/admin/posts");
+      router.replace("/admin/posts");
+      // NOTE:エラー処理
     } catch (error) {
       alert(`フォーム送信失敗\n${error}`);
     }

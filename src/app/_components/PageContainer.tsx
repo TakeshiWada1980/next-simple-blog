@@ -3,12 +3,13 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Header from "@/app/_components/Header";
 import AdminMenu from "@/app/_components/AdminMenu";
+import AuthProvider from "@/app/_contexts/AuthContext";
 
 type Props = {
   children: React.ReactNode;
 };
 
-const PageContainer = ({ children }: Props) => {
+const PageContainer: React.FC<Props> = ({ children }) => {
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState<boolean>(false);
   const adminMenuRef = useRef<HTMLDivElement>(null);
   const adminMenuButtonRef = useRef<HTMLButtonElement>(null);
@@ -50,21 +51,23 @@ const PageContainer = ({ children }: Props) => {
 
   return (
     <>
-      <Header
-        isAdminMenuOpen={isAdminMenuOpen}
-        setIsAdminMenuOpen={setIsAdminMenuOpen}
-        adminMenuButtonRef={adminMenuButtonRef}
-      />
-      <main className="container mx-auto md:w-2/3 xl:w-1/2">
-        <div className="relative h-full px-3 mt-16">
-          <div>{children}</div>
-        </div>
-        <AdminMenu
-          isOpen={isAdminMenuOpen}
-          setIsOpen={setIsAdminMenuOpen}
-          adminMenuRef={adminMenuRef}
+      <AuthProvider>
+        <Header
+          isAdminMenuOpen={isAdminMenuOpen}
+          setIsAdminMenuOpen={setIsAdminMenuOpen}
+          adminMenuButtonRef={adminMenuButtonRef}
         />
-      </main>
+        <main className="container mx-auto md:w-2/3 xl:w-1/2">
+          <div className="relative h-full px-3 mt-16">
+            <div>{children}</div>
+          </div>
+          <AdminMenu
+            isOpen={isAdminMenuOpen}
+            setIsOpen={setIsAdminMenuOpen}
+            adminMenuRef={adminMenuRef}
+          />
+        </main>
+      </AuthProvider>
     </>
   );
 };

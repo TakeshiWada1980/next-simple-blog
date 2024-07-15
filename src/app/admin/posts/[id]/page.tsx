@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import useGetRequest from "@/app/_hooks/useGetRequest";
 import FetchError from "@/app/_components/elements/FetchError";
 import FetchLoading from "@/app/_components/elements/FetchLoading";
@@ -16,9 +16,9 @@ import { isDevelopmentEnv } from "@/app/_utils/envConfig";
 // ウェブAPI関連
 import { ApiResponse, ApiSuccessResponse } from "@/app/_types/ApiResponse";
 import createPutRequest from "@/app/_utils/createPutRequest";
-import ApiRequestHeader from "@/app/_types/ApiRequestHeader";
 import PostRequest from "@/app/_types/PostRequest";
 import { useSWRConfig } from "swr";
+import useAuth from "@/app/_hooks/useAuth";
 
 // フォーム構成関連
 import ClearButton from "@/app/admin/_components/ClearButton";
@@ -27,29 +27,26 @@ import PostInputField from "../_components/PostInputField";
 
 const putApiCaller = createPutRequest<
   PostRequest.Payload,
-  ApiResponse<PostRequest.Payload>,
-  ApiRequestHeader
+  ApiResponse<PostRequest.Payload>
 >();
 
-type Params = {
-  id: string;
-};
-
-const page: React.FC<{ params: Params }> = ({ params }) => {
+const page: React.FC = () => {
+  const id: string = useParams().id as string;
   const pageTitle = "記事の編集";
   const router = useRouter();
+  const apiRequestHeader = useAuth().apiRequestHeader;
 
   const { mutate } = useSWRConfig();
 
   // 記事単体 と カテゴリ一覧 を取得するためのAPIエンドポイント
-  const postApiEndpoint = `/api/admin/posts/${params.id}`;
+  const postApiEndpoint = `/api/admin/posts/${id}`;
   const categoriesApiEndpoint = `/api/admin/categories?sort=postcount`;
 
   // prettier-ignore
   const { data: categoriesData, error: categoriesGetError } = 
-    useGetRequest<CategoryWithPostCount[]>(categoriesApiEndpoint);
+    useGetRequest<CategoryWithPostCount[]>(categoriesApiEndpoint,apiRequestHeader);
   const { data: postData, error: postGetError } =
-    useGetRequest<PostWithCategory>(postApiEndpoint);
+    useGetRequest<PostWithCategory>(postApiEndpoint, apiRequestHeader);
 
   // カテゴリ選択とカテゴリ投稿数の初期値を管理するステート
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
@@ -135,10 +132,10 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
   const onSubmit = async (data: PostRequest.Payload) => {
     isDevelopmentEnv && console.log("■ >>> " + JSON.stringify(data));
     try {
-      const headers = { Authorization: "token-token" };
-      const res = await putApiCaller(postApiEndpoint, data, headers);
+      const res = await putApiCaller(postApiEndpoint, data, apiRequestHeader);
       isDevelopmentEnv && console.log("■ <<< " + JSON.stringify(res));
       router.push("/admin/posts");
+      // NOTE:エラー処理
     } catch (error) {
       alert(`フォーム送信失敗\n${error}`);
     }

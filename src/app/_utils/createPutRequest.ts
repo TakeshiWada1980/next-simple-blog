@@ -1,15 +1,12 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { isDevelopmentEnv, apiDelay } from "@/app/_utils/envConfig";
+import ApiRequestHeader from "@/app/_types/ApiRequestHeader";
 
-const createPutRequest = <
-  RequestBody,
-  Response,
-  Headers extends Record<string, string> | undefined = undefined
->() => {
+const createPutRequest = <RequestBody, Response>() => {
   return async (
     url: string,
     data: RequestBody,
-    headers?: Headers
+    headers?: ApiRequestHeader
   ): Promise<Response> => {
     const options = headers ? { headers } : {};
     let res: AxiosResponse<Response, any> | null = null;
@@ -17,7 +14,7 @@ const createPutRequest = <
       res = await axios.put<Response>(url, data, options);
       res = res as AxiosResponse<Response, any>;
       // 開発環境では、動作検証のためにDelayを設定
-      if (isDevelopmentEnv) {
+      if (isDevelopmentEnv && apiDelay > 0) {
         await new Promise((resolve) => setTimeout(resolve, apiDelay));
       }
       return res.data;

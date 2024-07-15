@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import cn from "classnames";
 import {
   faDoorOpen,
@@ -10,6 +10,9 @@ import {
   faTags,
 } from "@fortawesome/free-solid-svg-icons";
 import AdminMenuLink from "./elements/AdminMenuLink";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/utils/supabase";
+import { set } from "date-fns";
 
 interface Props {
   isOpen: boolean;
@@ -19,6 +22,7 @@ interface Props {
 
 const AdminMenu: React.FC<Props> = (props: Props) => {
   const { isOpen, setIsOpen, adminMenuRef } = props;
+  const [isLoggingOut, setIsLoggingOut] = useState<boolean>(false);
   const menuStyle = cn(
     "fixed bottom-0",
     "container mx-auto md:w-2/3 xl:w-1/2",
@@ -30,7 +34,21 @@ const AdminMenu: React.FC<Props> = (props: Props) => {
     "overflow-auto",
     isOpen ? "translate-y-0" : "translate-y-full"
   );
+  const router = useRouter();
   const closeMenu = () => setIsOpen(false);
+  const logout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoggingOut(false);
+    }
+    // NOTE:トーストを出す
+    closeMenu();
+    router.replace("/");
+  };
 
   return (
     <div ref={adminMenuRef} className={menuStyle}>
@@ -69,10 +87,10 @@ const AdminMenu: React.FC<Props> = (props: Props) => {
           </div>
           <div className="pt-2 border-t border-slate-300">
             <AdminMenuLink
-              title="ログアウト"
-              href="/"
+              title={"ログアウト" + (isLoggingOut ? "処理..." : "")}
+              href="#"
               icon={faDoorOpen}
-              onClick={closeMenu}
+              onClick={logout}
             />
           </div>
         </nav>
