@@ -145,7 +145,7 @@ const page: React.FC = () => {
             <SubmitButton label="名前を変更" />
           </FormProvider>
           <DeleteActionDialog
-            className="px-3 font-bold text-base"
+            className="px-3 font-bold text-base hover:bg-red-500"
             title={deleteConfTitle}
             description={deleteConfDescription}
             endpoint={deleteEndpoint}

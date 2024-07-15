@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import cn from "classnames";
+import { twMerge } from "tailwind-merge";
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { ApiResponse } from "@/app/_types/ApiResponse";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -87,7 +88,7 @@ const DeleteActionDialog: React.FC<Props> = (props) => {
     <AlertDialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <AlertDialog.Trigger asChild>
         <button
-          className={cn(buttonStyle, className)}
+          className={twMerge(buttonStyle, className)}
           onClick={() => setIsDialogOpen(true)}
         >
           <FontAwesomeIcon icon={faTrashCan} />
