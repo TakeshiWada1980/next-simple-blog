@@ -91,7 +91,7 @@ const page: React.FC = () => {
       methods.reset({
         title: postData.data?.title,
         content: postData.data?.content,
-        thumbnailUrl: postData.data?.thumbnailUrl,
+        thumbnailImageKey: postData.data?.thumbnailImageKey,
         categories: postData.data?.categories.map((c) => c.category),
       });
       resetSelectedCategoryIds();
@@ -134,8 +134,11 @@ const page: React.FC = () => {
     try {
       const res = await putApiCaller(postApiEndpoint, data, apiRequestHeader);
       isDevelopmentEnv && console.log("■ <<< " + JSON.stringify(res));
-      router.push("/admin/posts");
-      // NOTE:エラー処理
+      if (res.success) {
+        router.push(res.data.id ? `/posts/${res.data.id}` : "/posts");
+      } else {
+        alert(`フォーム送信失敗\n${res.error.technicalInfo}`);
+      }
     } catch (error) {
       alert(`フォーム送信失敗\n${error}`);
     }
@@ -198,7 +201,7 @@ const page: React.FC = () => {
             toggleCategorySelection={toggleCategorySelection}
           />
           {/* 更新ボタン と 編集を元に戻すボタン */}
-          <div className="mt-8 flex justify-center space-x-4">
+          <div className="my-8 flex justify-center space-x-4">
             <SubmitButton label="更新" />
             <ClearButton label="編集を元に戻す" onClick={handleResetAction} />
           </div>

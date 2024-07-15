@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import cn from "classnames";
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { ApiResponse } from "@/app/_types/ApiResponse";
@@ -60,16 +60,27 @@ const DeleteActionDialog: React.FC<Props> = (props) => {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const apiRequestHeader = useAuth().apiRequestHeader;
+  // const apiRequestHeader = { Authorization: useAuth().token + "W" }; // 失敗テスト用
+
+  useEffect(() => {
+    setErrorMsg(null);
+  }, [isDialogOpen]);
 
   const handleDeleteClick = async () => {
     setIsBusy(true);
     const res = await deleteApiCaller(endpoint, apiRequestHeader);
     isDevelopmentEnv && console.log("■ <<< " + JSON.stringify(res));
-    // NOTE: 失敗した場合の処理をあとで追加する
-    handleDeleteAction({ isDone: true });
-    setIsBusy(false);
-    setIsDialogOpen(false);
+    if (res.success) {
+      handleDeleteAction({ isDone: true });
+      setIsBusy(false);
+      setIsDialogOpen(false);
+    } else {
+      handleDeleteAction({ isDone: false });
+      setErrorMsg(`削除に失敗しました。詳細 : ${res.error.technicalInfo}`);
+      setIsBusy(false);
+    }
   };
 
   return (
@@ -95,6 +106,7 @@ const DeleteActionDialog: React.FC<Props> = (props) => {
           </AlertDialog.Title>
           <AlertDialog.Description className="mt-4 mb-5 leading-normal">
             {description}
+            {errorMsg && <div className=" text-red-500">{errorMsg}</div>}
           </AlertDialog.Description>
           <div className="flex justify-end gap-4">
             <AlertDialog.Cancel asChild>

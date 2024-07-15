@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from "react";
+import React from "react";
 import ErrorMessage from "@/app/_components/elements/ErrorMessage";
 import { FieldErrors, useFormContext } from "react-hook-form";
 import CategoryWithPostCount from "@/app/admin/posts/_types/CategoryWithPostCount";
@@ -7,25 +7,15 @@ import CategoryToggleButton from "./CategoryToggleButton";
 import PostRequest from "@/app/_types/PostRequest";
 import cn from "classnames";
 import Image from "next/image";
-import { calculateMD5Hash } from "@/app/_utils/common";
-import { supabase } from "@/utils/supabase";
+import useThumbnailImage from "@/app/admin/posts/_hooks/useThumbnailImage";
 
 // スタイル設定
 const styles = {
-  // label要素、input要素、validateMsg(p)要素のコンテナ
   container: "flex mt-6 flex-col md:flex-row w-full",
-
-  // labelのスタイル
   label: "w-full md:w-2/12 md:mt-3 mb-2 font-bold",
-
-  // input要素とvalidateMsg(p)要素のコンテナ
   subContainer: "w-full md:w-10/12",
-
-  // テキストボックスとテキストエリアのスタイル
   input:
     "w-full px-3 py-3 border rounded-md duration-200 focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent",
-
-  // テキストボックスとテキストエリアののスタイル（無効時）
   disabledInput: "hover:cursor-not-allowed bg-gray-100",
 };
 
@@ -36,8 +26,9 @@ type Props = {
 };
 
 const PostInputField: React.FC<Props> = (props) => {
-  const { register, formState, setValue } = useFormContext();
-  const [previewImageUrl, setPreviewImageUrl] = useState<string | null>(null);
+  const { register, formState } = useFormContext();
+  const { thumbnailImageUrl, handleImageChange } = useThumbnailImage();
+
   const isSubmitting = formState.isSubmitting;
   const errors = formState.errors as FieldErrors<PostRequest.Payload>;
   const {
@@ -45,33 +36,6 @@ const PostInputField: React.FC<Props> = (props) => {
     selectedCategoryIds,
     toggleCategorySelection,
   } = props;
-
-  const handleImageChange = async (
-    event: ChangeEvent<HTMLInputElement>
-  ): Promise<void> => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const fileHash = await calculateMD5Hash(file);
-    const filePath = `private/${fileHash}`;
-    console.log(filePath); // ファイルパスを指定
-
-    const { data, error } = await supabase.storage
-      .from("post_thumbnail") // バケット名を指定
-      .upload(filePath, file, {
-        cacheControl: "3600",
-        upsert: true, // 上書き可能
-      });
-
-    // アップロードに失敗したらエラーを表示して終了
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    setPreviewImageUrl(URL.createObjectURL(file));
-    setValue("thumbnailImageKey", fileHash);
-  };
 
   return (
     <>
@@ -111,24 +75,6 @@ const PostInputField: React.FC<Props> = (props) => {
         </div>
       </div>
 
-      {/* 画像 */}
-      <div className={styles.container}>
-        <label htmlFor="thumbnailUrl" className={styles.label}>
-          画像URL
-        </label>
-        <div className={styles.subContainer}>
-          <input
-            {...register("thumbnailUrl")}
-            id="thumbnailUrl"
-            type="text"
-            className={cn(styles.input, isSubmitting && styles.disabledInput)}
-            placeholder="画像のURLを入力してください。"
-            disabled={isSubmitting}
-          />
-          <ErrorMessage message={errors.thumbnailUrl?.message} />
-        </div>
-      </div>
-
       {/* 画像キー */}
       <div className={styles.container}>
         <label htmlFor="thumbnailImageKey" className={styles.label}>
@@ -148,7 +94,7 @@ const PostInputField: React.FC<Props> = (props) => {
         </div>
       </div>
 
-      {/* 画像アップロード */}
+      {/* ファイル選択ボタン */}
       <div className="flex mt-3 flex-col md:flex-row w-full">
         <div className={styles.label}></div>
         <div className={styles.subContainer}>
@@ -160,13 +106,14 @@ const PostInputField: React.FC<Props> = (props) => {
         </div>
       </div>
 
-      {previewImageUrl && (
+      {/* 画像プレビュー領域 */}
+      {thumbnailImageUrl && (
         <div className="flex mt-3 flex-col md:flex-row w-full">
           <div className={styles.label}></div>
           <div className={styles.subContainer}>
             <Image
               className="rounded-lg"
-              src={previewImageUrl}
+              src={thumbnailImageUrl}
               alt="プレビュー画像"
               width={800}
               height={400}
@@ -176,6 +123,7 @@ const PostInputField: React.FC<Props> = (props) => {
         </div>
       )}
 
+      {/* カテゴリの選択 */}
       <div className={styles.container}>
         <div className={styles.label}>カテゴリ</div>
         <div className={styles.subContainer}>

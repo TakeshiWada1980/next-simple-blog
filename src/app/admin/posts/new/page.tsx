@@ -50,18 +50,26 @@ const page: React.FC = () => {
     CategoryWithPostCount[] | null
   >(null);
 
+  const defaultValues = {
+    title: "",
+    content: "",
+    thumbnailImageKey: "",
+    categories: [],
+  };
+
   // フォーム状態管理
   const methods = useForm<PostRequest.Payload>({
     mode: "onChange",
     resolver: zodResolver(PostRequest.clientValidationSchema),
+    defaultValues,
   });
 
   // カテゴリ選択の状態をリセット
   const resetSelectedCategoryIds = () => {
     setSelectedCategoryIds([]);
 
+    // カテゴリ投稿数の初期値が取得できてない場合は何もしない
     if (!categoriesData || !initCategoryPostCounts) {
-      // カテゴリ投稿数の初期値が取得できてない場合は何もしない
       return;
     }
 
@@ -79,17 +87,7 @@ const page: React.FC = () => {
     }
   }, [categoriesData]);
 
-  // フォームの初期化
-  useEffect(() => {
-    methods.reset({
-      title: "",
-      content: "",
-      thumbnailUrl: "",
-      categories: [],
-    });
-  }, [methods.reset]);
-
-  // カテゴリ一覧 の取得に失敗した場合
+  // カテゴリ一覧の取得に失敗のときのレスポンス
   if (categoriesGetError) {
     const error = categoriesGetError;
     if (error) {
@@ -104,7 +102,7 @@ const page: React.FC = () => {
     }
   }
 
-  // カテゴリ一覧 を取得中の場合
+  // カテゴリ一覧を取得中のときのレスポンス
   if (!categoriesData) {
     return (
       <PageWrapper pageTitle={pageTitle}>
@@ -113,9 +111,10 @@ const page: React.FC = () => {
     );
   }
 
-  // [リセット]ボタンの押下処理
+  // [リセット]ボタンの押下処理 thumbnailImageKey のみ維持
   const handleResetAction = () => {
-    methods.reset();
+    const thumbnailImageKey = methods.watch("thumbnailImageKey");
+    methods.reset({ ...defaultValues, thumbnailImageKey });
     resetSelectedCategoryIds();
   };
 
@@ -125,8 +124,11 @@ const page: React.FC = () => {
     try {
       const res = await postApiCaller(postApiEndpoint, data, apiRequestHeader);
       isDevelopmentEnv && console.log("■ <<< " + JSON.stringify(res));
-      router.replace("/admin/posts");
-      // NOTE:エラー処理
+      if (res.success) {
+        router.push(res.data.id ? `/posts/${res.data.id}` : "/posts");
+      } else {
+        alert(`フォーム送信失敗\n${res.error.technicalInfo}`);
+      }
     } catch (error) {
       alert(`フォーム送信失敗\n${error}`);
     }
@@ -185,7 +187,7 @@ const page: React.FC = () => {
           />
 
           {/* 投稿ボタン と リセットボタン */}
-          <div className="mt-8 flex justify-center space-x-4">
+          <div className="my-8 flex justify-center space-x-4">
             <SubmitButton label="投稿" />
             <ClearButton label="リセット" onClick={handleResetAction} />
           </div>

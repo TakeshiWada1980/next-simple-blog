@@ -57,12 +57,12 @@ class PostService {
   public static insertPostWithCategories = async (
     post: PostRequest.Payload
   ) => {
-    const { title, content, thumbnailUrl, categories } = post;
+    const { title, content, thumbnailImageKey, categories } = post;
     await this.checkCategoryExistence(categories);
 
     // Postテーブルに追加
     const data = await prisma.post.create({
-      data: { title, content, thumbnailUrl },
+      data: { title, content, thumbnailImageKey },
     });
 
     // PostCategoryテーブルに挿入 (sqliteではcreateManyが使えない）
@@ -86,12 +86,12 @@ class PostService {
     }
 
     // 更新
-    const { title, content, thumbnailUrl, categories } = post;
+    const { title, content, thumbnailImageKey, categories } = post;
     await this.checkCategoryExistence(categories);
 
     const data = await prisma.post.update({
       where: { id: parseInt(id) },
-      data: { title, content, thumbnailUrl },
+      data: { title, content, thumbnailImageKey },
     });
 
     await prisma.categoriesOnPosts.deleteMany({

@@ -4,6 +4,7 @@ type MsgType = "server" | "client";
 
 const createValidationSchema = (t: MsgType) => {
   return z.object({
+    id: z.optional(z.string()),
     title: z
       .string({ message: msgsMap.title.required[t] })
       .transform((v) => v.trim())
@@ -16,9 +17,6 @@ const createValidationSchema = (t: MsgType) => {
       .refine((val) => val.length >= 2, {
         message: msgsMap.content.min[t](2),
       }),
-    thumbnailUrl: z
-      .string({ message: msgsMap.thumbnailUrl.required[t] })
-      .url(msgsMap.thumbnailUrl.url[t]),
     thumbnailImageKey: z
       .string({
         message: msgsMap.thumbnailImageKey.required[t],
@@ -69,16 +67,6 @@ const msgsMap = {
         `フィールド 'content' は、前後の空白文字を除いて ${n}文字以上 が必要です。`,
       client: (n: number) =>
         `必須入力項目です。前後の空白文字を除いて ${n} 文字以上を入力してください。`,
-    },
-  },
-  thumbnailUrl: {
-    required: {
-      server: "'string型' の値を持つフィールド 'thumbnailUrl' が存在しません。",
-      client: "[NO DATA]",
-    },
-    url: {
-      server: "フィールド 'thumbnailUrl' は、無効なURLです。",
-      client: "必須入力項目です。有効なURLを入力してください。",
     },
   },
   thumbnailImageKey: {

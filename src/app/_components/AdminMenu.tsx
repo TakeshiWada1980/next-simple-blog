@@ -45,7 +45,6 @@ const AdminMenu: React.FC<Props> = (props: Props) => {
     } finally {
       setIsLoggingOut(false);
     }
-    // NOTE:トーストを出す
     closeMenu();
     router.replace("/");
   };

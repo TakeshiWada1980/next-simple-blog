@@ -7,8 +7,8 @@ const createValidationSchema = (t: MsgType) => {
     name: z
       .string({ message: msgsMap.name.required[t] })
       .transform((v) => v.trim())
-      .refine((val) => val.length >= 2, {
-        message: msgsMap.name.min[t](2),
+      .refine((val) => val.length >= 1, {
+        message: msgsMap.name.min[t](1),
       }),
   });
 };
@@ -16,12 +16,12 @@ const createValidationSchema = (t: MsgType) => {
 const msgsMap = {
   name: {
     required: {
-      server: "'string型' の値を持つフィールド 'title' が存在しません。",
+      server: "'string型' の値を持つフィールド 'name' が存在しません。",
       client: "[NO DATA]",
     },
     min: {
       server: (n: number) =>
-        `フィールド 'title' は、前後の空白文字を除いて ${n}文字以上 が必要です。`,
+        `フィールド 'name' は、前後の空白文字を除いて ${n}文字以上 が必要です。`,
       client: (n: number) =>
         `必須入力項目です。前後の空白文字を除いて ${n}文字以上 を入力してください。`,
     },

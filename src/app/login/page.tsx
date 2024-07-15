@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import PageWrapper from "@/app/_components/elements/PageWrapper";
 
-// NOTE:ログインに成功したらトーストを出したい
 // NOTE:Zodによるバリデーションを追加する
 // NOTE:useFormを使ってフォームの状態を管理する
 

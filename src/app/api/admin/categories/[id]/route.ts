@@ -38,7 +38,7 @@ export const PUT = async (req: NextRequest, params: Params) => {
 };
 
 // [DELETE] /api/admin/categories/:id
-// NOTE:`req: NextRequest` がないと param が適切に取得できないので注意
+// `req: NextRequest` がないと param が適切に取得できないので注意
 export const DELETE = async (req: NextRequest, params: Params) => {
   const { id } = params.params;
   try {

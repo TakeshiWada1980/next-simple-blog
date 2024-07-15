@@ -20,7 +20,6 @@ import {
 
 type Params = { params: { id: string } };
 
-// NOTE: 現状で /api/posts/route.ts と同じ。認証処理が入るときは変更が必要
 // [GET] /api/admin/post/:id
 export const GET = getPost;
 
@@ -29,7 +28,6 @@ export const PUT = async (req: NextRequest, { params: { id } }: Params) => {
   try {
     await validateAuthToken(req.headers.get("Authorization") ?? "");
     const body: PostRequest.Payload = await req.json();
-    console.log(JSON.stringify(body));
     const validatedBody = PostRequest.serverValidationSchema.parse(body);
     const updatedCategory = await PostService.updatePost(id, validatedBody);
     return NextResponse.json(createSuccessPutResponse(updatedCategory));
@@ -40,7 +38,7 @@ export const PUT = async (req: NextRequest, { params: { id } }: Params) => {
 };
 
 // [DELETE] /api/admin/posts/:id
-// NOTE:`req: NextRequest` がないと param が適切に取得できないので注意
+// `req: NextRequest` がないと param が適切に取得できないので注意
 export const DELETE = async (req: NextRequest, { params: { id } }: Params) => {
   try {
     await validateAuthToken(req.headers.get("Authorization") ?? "");

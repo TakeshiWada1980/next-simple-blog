@@ -9,6 +9,7 @@ import Link from "next/link";
 import cn from "classnames";
 import { ApiResponse } from "@/app/_types/ApiResponse";
 import DeleteActionDialog from "@/app/_components/elements/DeleteActionDialog";
+import ApiRequestHeader from "@/app/_types/ApiRequestHeader";
 
 type Props = {
   post: PostWithCategory;
@@ -17,7 +18,7 @@ type Props = {
   handleDeleteAction: ({ isDone }: { isDone: boolean }) => void;
   deleteApiCaller: (
     url: string,
-    headers?: undefined
+    headers?: ApiRequestHeader
   ) => Promise<ApiResponse<null>>;
 };
 

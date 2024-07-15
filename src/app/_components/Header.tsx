@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope, faCircleUser } from "@fortawesome/free-solid-svg-icons";
 import AdminMenuButton from "./elements/AdminMenuButton";
 import useAuth from "@/app/_hooks/useAuth";
-import * as Toast from "@radix-ui/react-toast";
+import InfoToast from "@/app/_components/elements/InfoToast";
 
 interface Props {
   isAdminMenuOpen: boolean;
@@ -18,17 +18,13 @@ const Header: React.FC<Props> = (props) => {
   const { isAdminMenuOpen, setIsAdminMenuOpen, adminMenuButtonRef } = props;
   const { session, isLoading } = useAuth();
 
-  // トースト表示
-  const [toastOpen, setToastOpen] = React.useState(false);
+  // ログイン状態のトースト表示
   const [toastMsg, setToastMsg] = React.useState("");
-
   useEffect(() => {
     if (session === null) {
-      setToastMsg("ログアウトしました");
-      setToastOpen(true);
+      setToastMsg("ログアウトしました。");
     } else if (session !== undefined) {
-      setToastMsg("ログインしました");
-      setToastOpen(true);
+      setToastMsg("ログインしました。");
     }
   }, [session]);
 
@@ -66,17 +62,7 @@ const Header: React.FC<Props> = (props) => {
           )}
         </nav>
       </header>
-
-      <Toast.Provider swipeDirection="right" duration={3000}>
-        <Toast.Root
-          className="bg-slate-100 border border-slate-800 rounded-xl shadow-md data-[state=open]:animate-slideIn data-[state=closed]:animate-hide data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=cancel]:translate-x-0 data-[swipe=cancel]:transition-[transform_200ms_ease-out] data-[swipe=end]:animate-swipeOut"
-          open={toastOpen}
-          onOpenChange={setToastOpen}
-        >
-          <Toast.Title className="px-4 py-2">{toastMsg}</Toast.Title>
-        </Toast.Root>
-        <Toast.Viewport className="[--viewport-padding:_25px] fixed bottom-0 right-0 flex flex-col p-[var(--viewport-padding)] gap-[10px]  max-w-[100vw] m-0 list-none z-[2147483647] outline-none" />
-      </Toast.Provider>
+      <InfoToast msg={toastMsg} />
     </>
   );
 };

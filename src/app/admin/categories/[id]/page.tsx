@@ -37,6 +37,7 @@ const page: React.FC = () => {
   let pageTitle = "カテゴリの名前変更";
   const router = useRouter();
   const apiRequestHeader = useAuth().apiRequestHeader;
+  const INVALID_apiRequestHeader = { Authorization: useAuth().token + "W" }; // 失敗テスト用
 
   const [serverErrorMessage, setServerErrorMessage] = useState<string | null>();
 
@@ -83,13 +84,18 @@ const page: React.FC = () => {
 
       if (res.success) {
         router.push("/admin/categories");
+        return;
       }
       if (res.error?.appErrorCode == AppErrorCode.CATEGORY_ALREADY_EXISTS) {
         setServerErrorMessage(`カテゴリ「${data.name}」は既に存在します。`);
+      } else {
+        setServerErrorMessage(
+          `操作に失敗しました。${res.error?.technicalInfo}`
+        );
       }
-      // NOTE:認証エラーの追加
     } catch (error) {
       isDevelopmentEnv && console.log("■ <<< " + JSON.stringify(res));
+      setServerErrorMessage(`操作に失敗しました。${error}`);
     }
   };
 

@@ -6,7 +6,7 @@ import ApiRequestHeader from "@/app/_types/ApiRequestHeader";
 interface AuthContextProps {
   session: Session | null | undefined;
   isLoading: boolean;
-  // token: string | null;
+  token: string | null;
   apiRequestHeader: ApiRequestHeader;
 }
 
@@ -81,7 +81,9 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
   }, [token, session]);
 
   return (
-    <AuthContext.Provider value={{ session, isLoading, apiRequestHeader }}>
+    <AuthContext.Provider
+      value={{ session, isLoading, apiRequestHeader, token }}
+    >
       {children}
     </AuthContext.Provider>
   );
