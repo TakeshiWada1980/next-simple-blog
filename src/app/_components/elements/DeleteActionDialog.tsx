@@ -13,9 +13,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { isDevelopmentEnv } from "@/app/_utils/envConfig";
 
-import useAuth from "@/app/_hooks/useAuth";
-import ApiRequestHeader from "@/app/_types/ApiRequestHeader";
-
 const buttonStyle = cn(
   "border rounded-md px-2 py-1 ml-1 text-sm bg-red-400 text-white tracking-wider",
   "flex flex-nowrap whitespace-nowrap outline-none justify-center items-center gap-2",
@@ -39,31 +36,26 @@ const deleteButtonStyle = cn(
 
 type Props = {
   className?: string;
-  endpoint: string;
   title: string;
   description: string;
   handleDeleteAction: ({ isDone }: { isDone: boolean }) => void;
-  deleteApiCaller: (
-    url: string,
-    headers?: ApiRequestHeader
-  ) => Promise<ApiResponse<null>>;
+  onDeleteCall: () => Promise<ApiResponse<null>>;
 };
 
 const DeleteActionDialog: React.FC<Props> = (props) => {
   const {
-    endpoint,
+    // endpoint,
     title,
     description,
     handleDeleteAction,
-    deleteApiCaller,
+    // deleteApiCaller,
     className,
+    onDeleteCall,
   } = props;
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const apiRequestHeader = useAuth().apiRequestHeader;
-  // const apiRequestHeader = { Authorization: useAuth().token + "W" }; // 失敗テスト用
 
   useEffect(() => {
     setErrorMsg(null);
@@ -71,7 +63,7 @@ const DeleteActionDialog: React.FC<Props> = (props) => {
 
   const handleDeleteClick = async () => {
     setIsBusy(true);
-    const res = await deleteApiCaller(endpoint, apiRequestHeader);
+    const res = await onDeleteCall();
     isDevelopmentEnv && console.log("■ <<< " + JSON.stringify(res));
     if (res.success) {
       handleDeleteAction({ isDone: true });

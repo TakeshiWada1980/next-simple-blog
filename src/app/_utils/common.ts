@@ -19,6 +19,7 @@ export const calculateMD5Hash = (file: File): Promise<string> => {
 export const urlPattern = new RegExp(
   "^(https?:\\/\\/)?" + // プロトコル
     "((([a-zA-Z\\d]([a-zA-Z\\d-]*[a-zA-Z\\d])*)\\.)+[a-zA-Z]{2,}|" + // ドメイン名
+    "localhost|" + // ローカルホストを追加
     "((\\d{1,3}\\.){3}\\d{1,3}))" + // IPアドレス
     "(\\:\\d+)?(\\/[-a-zA-Z\\d%_.~+]*)*" + // ポートとパス
     "(\\?[;&a-zA-Z\\d%_.~+=-]*)?" + // クエリストリング

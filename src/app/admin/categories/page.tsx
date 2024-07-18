@@ -18,7 +18,7 @@ import useAuth from "@/app/_hooks/useAuth";
 
 const deleteApiCaller = createDeleteRequest<ApiResponse<null>>();
 
-const page = () => {
+const Page = () => {
   const url = "/api/admin/categories?sort=postcount";
   const apiRequestHeader = useAuth().apiRequestHeader;
   const { data, error } = useGetRequest<CategoryWithPostCount[]>(
@@ -108,4 +108,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

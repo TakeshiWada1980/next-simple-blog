@@ -1,7 +1,7 @@
 import { urlPattern } from "@/app/_utils/common";
 
-const validateURL = (url: string): string => {
-  if (!urlPattern.test(url)) {
+const validateURL = (url: string | undefined): string => {
+  if (!url || !urlPattern.test(url)) {
     throw new Error(`${url} is not a valid URL`);
   }
   return url;
@@ -20,3 +20,7 @@ export const isDevelopmentEnv =
 export const apiDelay = 0;
 
 export const bucketName = "post_thumbnail";
+
+export const loginRedirectUrl = validateURL(
+  process.env.NEXT_PUBLIC_LOGIN_REDIRECT_TO
+);

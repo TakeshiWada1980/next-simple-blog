@@ -40,13 +40,13 @@ const AdminMenu: React.FC<Props> = (props: Props) => {
     setIsLoggingOut(true);
     try {
       await supabase.auth.signOut();
+      closeMenu();
+      router.replace("/");
     } catch (e) {
       console.error(e);
     } finally {
       setIsLoggingOut(false);
     }
-    closeMenu();
-    router.replace("/");
   };
 
   return (

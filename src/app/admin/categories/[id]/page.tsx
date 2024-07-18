@@ -32,7 +32,7 @@ const putApiCaller = createPutRequest<
   ApiResponse<CategoryRequest.Payload>
 >();
 
-const page: React.FC = () => {
+const Page: React.FC = () => {
   const id: string = useParams().id as string;
   let pageTitle = "カテゴリの名前変更";
   const router = useRouter();
@@ -44,10 +44,15 @@ const page: React.FC = () => {
   // 記事投稿、カテゴリ一覧取得のAPIエンドポイント
   const categoriesGetEndpoint = `/api/admin/categories?sort=postcount`;
   const categoryPutEndpoint = `/api/admin/categories/${id}`;
+  const categoryDeleteEndpoint = `/api/admin/categories/${id}`;
 
   // prettier-ignore
   const { data: categoriesData, error: categoriesGetError } = 
     useGetRequest<CategoryWithPostCount[]>(categoriesGetEndpoint,apiRequestHeader);
+
+  const onDeleteCall = async () => {
+    return await deleteApiCaller(categoryDeleteEndpoint, apiRequestHeader);
+  };
 
   const categoryWithPostCountList = categoriesData?.data;
 
@@ -116,7 +121,6 @@ const page: React.FC = () => {
 
   const deleteConfTitle = `本当にカテゴリを削除してよいですか？`;
   const deleteConfDescription = `カテゴリ「${oldName}」を削除します。削除後は、元に戻すことはできません。投稿記事が削除されることはありません。`;
-  const deleteEndpoint = `/api/admin/categories/${id}`;
 
   const handleDeleteAction = async ({ isDone }: { isDone: boolean }) => {
     if (isDone) {
@@ -148,9 +152,10 @@ const page: React.FC = () => {
             className="px-3 font-bold text-base hover:bg-red-500"
             title={deleteConfTitle}
             description={deleteConfDescription}
-            endpoint={deleteEndpoint}
+            // endpoint={categoryDeleteEndpoint}
             handleDeleteAction={handleDeleteAction}
-            deleteApiCaller={deleteApiCaller}
+            // deleteApiCaller={deleteApiCaller}
+            onDeleteCall={onDeleteCall}
           />
         </div>
       </form>
@@ -158,4 +163,4 @@ const page: React.FC = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -29,7 +29,7 @@ const postApiCaller = createPostRequest<
   ApiResponse<PostRequest.Payload>
 >();
 
-const page: React.FC = () => {
+const Page: React.FC = () => {
   const pageTitle = "記事の新規作成";
   const router = useRouter();
   const apiRequestHeader = useAuth().apiRequestHeader;
@@ -197,4 +197,4 @@ const page: React.FC = () => {
   );
 };
 
-export default page;
+export default Page;

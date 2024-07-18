@@ -30,7 +30,7 @@ const putApiCaller = createPutRequest<
   ApiResponse<PostRequest.Payload>
 >();
 
-const page: React.FC = () => {
+const Page: React.FC = () => {
   const id: string = useParams().id as string;
   const pageTitle = "記事の編集";
   const router = useRouter();
@@ -211,4 +211,4 @@ const page: React.FC = () => {
   );
 };
 
-export default page;
+export default Page;

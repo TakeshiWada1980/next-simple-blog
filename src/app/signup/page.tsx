@@ -2,8 +2,9 @@
 
 import { supabase } from "@/utils/supabase"; // 前の工程で作成したファイル
 import { useState } from "react";
+import { loginRedirectUrl } from "@/app/_utils/envConfig";
 
-export default function Page() {
+const Page = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -14,7 +15,7 @@ export default function Page() {
       email,
       password,
       options: {
-        emailRedirectTo: `http://localhost:3000/login`,
+        emailRedirectTo: loginRedirectUrl,
       },
     });
     if (error) {
@@ -77,4 +78,6 @@ export default function Page() {
       </form>
     </div>
   );
-}
+};
+
+export default Page;

@@ -25,7 +25,7 @@ const postApiCaller = createPostRequest<
   ApiResponse<CategoryRequest.Payload>
 >();
 
-const page: React.FC = () => {
+const Page: React.FC = () => {
   const pageTitle = "カテゴリの新規作成";
   const router = useRouter();
   const apiRequestHeader = useAuth().apiRequestHeader;
@@ -93,4 +93,4 @@ const page: React.FC = () => {
   );
 };
 
-export default page;
+export default Page;

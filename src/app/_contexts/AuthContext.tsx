@@ -67,16 +67,14 @@ const AuthProvider: React.FC<Props> = ({ children }) => {
 
   useEffect(() => {
     setApiRequestHeader({ Authorization: token });
-
-    if (session) {
-      const expiresAt = session.expires_at;
-      if (expiresAt) {
-        const expirationDate = new Date(expiresAt * 1000);
-        console.log(`AccessToken期限:${expirationDate.toLocaleString()}`);
-        const timeout = expiresAt * 1000 - Date.now() - 60000; // 1分前にリフレッシュ
-        const refreshTimeout = setTimeout(refreshSession, timeout);
-        return () => clearTimeout(refreshTimeout);
-      }
+    if (!session) return;
+    const expiresAt = session.expires_at;
+    if (expiresAt) {
+      const expirationDate = new Date(expiresAt * 1000);
+      console.log(`AccessToken期限:${expirationDate.toLocaleString()}`);
+      const timeout = expiresAt * 1000 - Date.now() - 60000; // 1分前にリフレッシュ
+      const refreshTimeout = setTimeout(refreshSession, timeout);
+      return () => clearTimeout(refreshTimeout);
     }
   }, [token, session]);
 
