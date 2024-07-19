@@ -21,6 +21,4 @@ export const apiDelay = 0;
 
 export const bucketName = "post_thumbnail";
 
-export const loginRedirectUrl = validateURL(
-  process.env.NEXT_PUBLIC_LOGIN_REDIRECT_TO
-);
+export const appBaseUrl = validateURL(process.env.NEXT_PUBLIC_APP_BASE_URL);

@@ -2,7 +2,7 @@
 
 import { supabase } from "@/utils/supabase"; // 前の工程で作成したファイル
 import { useState } from "react";
-import { loginRedirectUrl } from "@/app/_utils/envConfig";
+import { appBaseUrl } from "@/app/_utils/envConfig";
 
 const Page = () => {
   const [email, setEmail] = useState("");
@@ -15,7 +15,7 @@ const Page = () => {
       email,
       password,
       options: {
-        emailRedirectTo: loginRedirectUrl,
+        emailRedirectTo: `${appBaseUrl}/login`,
       },
     });
     if (error) {
