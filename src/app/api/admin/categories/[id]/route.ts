@@ -12,6 +12,10 @@ import { z } from "zod";
 import AppErrorCode from "@/app/_types/AppErrorCode";
 import CategoryService from "@/app/_services/categoryService";
 import CategoryRequest from "@/app/_types/CategoryRequest";
+import {
+  validateAuthToken,
+  InvalidTokenError,
+} from "@/app/api/_helpers/validateAuthToken";
 
 type Params = { params: { id: string } };
 
@@ -19,6 +23,7 @@ type Params = { params: { id: string } };
 export const PUT = async (req: NextRequest, params: Params) => {
   const { id } = params.params;
   try {
+    await validateAuthToken(req.headers.get("Authorization") ?? "");
     const body: CategoryRequest.Payload = await req.json();
     const validatedBody = CategoryRequest.serverValidationSchema.parse(body);
     const updatedCategory = await CategoryService.updateCategory(
@@ -33,10 +38,11 @@ export const PUT = async (req: NextRequest, params: Params) => {
 };
 
 // [DELETE] /api/admin/categories/:id
-// NOTE:`req: NextRequest` がないと param が適切に取得できないので注意
+// `req: NextRequest` がないと param が適切に取得できないので注意
 export const DELETE = async (req: NextRequest, params: Params) => {
   const { id } = params.params;
   try {
+    await validateAuthToken(req.headers.get("Authorization") ?? "");
     await CategoryService.deleteCategory(id);
     return NextResponse.json(createSuccessDeleteResponse());
   } catch (error) {
@@ -73,6 +79,12 @@ const createErrorResponse = (error: unknown): ApiErrorResponse => {
   ) {
     errorResponseBuilder
       .setHttpStatus(StatusCodes.BAD_REQUEST)
+      .setOrigin(Origin.CLIENT)
+      .setAppErrorCode(error.appErrorCode)
+      .setTechnicalInfo(error.message);
+  } else if (error instanceof InvalidTokenError) {
+    errorResponseBuilder
+      .setHttpStatus(StatusCodes.UNAUTHORIZED)
       .setOrigin(Origin.CLIENT)
       .setAppErrorCode(error.appErrorCode)
       .setTechnicalInfo(error.message);

@@ -5,6 +5,7 @@ const AppErrorCode = {
   INVALID_POST_DATA: "1002",
   UNKNOWN_ERROR: "9999",
   ENDPOINT_NOT_FOUND: "9404",
+  INVALID_TOKEN: "4001",
 };
 
 export default AppErrorCode;

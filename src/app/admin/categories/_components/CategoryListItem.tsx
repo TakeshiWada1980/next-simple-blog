@@ -8,6 +8,8 @@ import Link from "next/link";
 import cn from "classnames";
 import { ApiResponse } from "@/app/_types/ApiResponse";
 import DeleteActionDialog from "@/app/_components/elements/DeleteActionDialog";
+import ApiRequestHeader from "@/app/_types/ApiRequestHeader";
+import useAuth from "@/app/_hooks/useAuth";
 
 type Props = {
   category: CategoryWithPostCount;
@@ -16,7 +18,7 @@ type Props = {
   handleDeleteAction: ({ isDone }: { isDone: boolean }) => void;
   deleteApiCaller: (
     url: string,
-    headers?: undefined
+    headers?: ApiRequestHeader
   ) => Promise<ApiResponse<null>>;
 };
 
@@ -25,12 +27,20 @@ type ButtonEvent =
   | React.TouchEvent<HTMLButtonElement>;
 
 const CategoryListItem: React.FC<Props> = (props) => {
-  const { category, selectedCategoryId, setSelectedCategoryId } = props;
+  const {
+    category,
+    deleteApiCaller,
+    selectedCategoryId,
+    setSelectedCategoryId,
+  } = props;
 
   //削除関連
   const deleteConfTitle = `本当にカテゴリを削除してよいですか？`;
   const deleteConfDescription = `選択されたカテゴリ「${category.name}」を削除します。削除後は、元に戻すことはできません。投稿記事が削除されることはありません。`;
-  const deleteEndpoint = (id: number) => `/api/admin/categories/${id}`;
+  const deleteEndpoint = `/api/admin/categories/${category.id}`;
+  const apiRequestHeader = useAuth().apiRequestHeader;
+  const onDeleteCall = async () =>
+    await deleteApiCaller(deleteEndpoint, apiRequestHeader);
 
   const selectAction = (e: ButtonEvent) => {
     isSelected
@@ -59,9 +69,8 @@ const CategoryListItem: React.FC<Props> = (props) => {
             className={cn(isSelected ? "block" : "hidden", "animate-jump")}
             title={deleteConfTitle}
             description={deleteConfDescription}
-            endpoint={deleteEndpoint(category.id)}
             handleDeleteAction={props.handleDeleteAction}
-            deleteApiCaller={props.deleteApiCaller}
+            onDeleteCall={onDeleteCall}
           />
           <button onClick={selectAction}>
             <FontAwesomeIcon

@@ -9,26 +9,25 @@ import {
 import { StatusCodes } from "@/app/_utils/extendedStatusCodes";
 import SuccessResponseBuilder from "@/app/api/_helpers/successResponseBuilder";
 import ErrorResponseBuilder from "@/app/api/_helpers/errorResponseBuilder";
-import { GET as getPosts } from "@/app/api/posts/route";
 import { z } from "zod";
 import PostRequest from "@/app/_types/PostRequest";
 import PostService from "@/app/_services/postService";
 import AppErrorCode from "@/app/_types/AppErrorCode";
+import {
+  validateAuthToken,
+  InvalidTokenError,
+} from "@/app/api/_helpers/validateAuthToken";
 
 type Params = { params: { id: string } };
 
-// NOTE: 現状で /apy/posts/route.ts と同じ。認証処理が入るときは変更が必要
 // [GET] /api/admin/post/:id
 export const GET = getPost;
 
 // [PUT] /api/admin/posts/:id
 export const PUT = async (req: NextRequest, { params: { id } }: Params) => {
   try {
+    await validateAuthToken(req.headers.get("Authorization") ?? "");
     const body: PostRequest.Payload = await req.json();
-
-    // const token = req.headers.get("Authorization") ?? "";
-    // console.log(token);
-
     const validatedBody = PostRequest.serverValidationSchema.parse(body);
     const updatedCategory = await PostService.updatePost(id, validatedBody);
     return NextResponse.json(createSuccessPutResponse(updatedCategory));
@@ -39,9 +38,10 @@ export const PUT = async (req: NextRequest, { params: { id } }: Params) => {
 };
 
 // [DELETE] /api/admin/posts/:id
-// NOTE:`req: NextRequest` がないと param が適切に取得できないので注意
+// `req: NextRequest` がないと param が適切に取得できないので注意
 export const DELETE = async (req: NextRequest, { params: { id } }: Params) => {
   try {
+    await validateAuthToken(req.headers.get("Authorization") ?? "");
     await PostService.deletePost(id);
     return NextResponse.json(createSuccessDeleteResponse());
   } catch (error) {
@@ -79,6 +79,12 @@ const createErrorResponse = (error: unknown): ApiErrorResponse => {
   } else if (error instanceof PostService.CategoryNotFoundError) {
     errorResponseBuilder
       .setHttpStatus(StatusCodes.BAD_REQUEST)
+      .setOrigin(Origin.CLIENT)
+      .setAppErrorCode(error.appErrorCode)
+      .setTechnicalInfo(error.message);
+  } else if (error instanceof InvalidTokenError) {
+    errorResponseBuilder
+      .setHttpStatus(StatusCodes.UNAUTHORIZED)
       .setOrigin(Origin.CLIENT)
       .setAppErrorCode(error.appErrorCode)
       .setTechnicalInfo(error.message);

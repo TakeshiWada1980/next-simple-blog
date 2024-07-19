@@ -3,7 +3,10 @@
 // npx prisma generate
 // https://miro.com/app/board/uXjVK5dcQxk=/?share_link_id=858227987907
 
-// NOTE:カラムの名称は Prisma 公式に倣って変更
+// 情報取得と整形 (コメントは消えてしまうので事前に退避させる)
+// npx prisma db pull
+
+// カラムの名称は Prisma 公式に倣って設定
 // https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations
 
 generator client {
@@ -11,37 +14,35 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-// ブログ記事テーブル
 model Post {
-  id             Int             @id @default(autoincrement())
-  title          String
-  content        String
-  thumbnailUrl   String
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  categories     CategoriesOnPosts[]
+  id                Int                 @id @default(autoincrement())
+  title             String
+  content           String
+  thumbnailImageKey String
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  categories        CategoriesOnPosts[]
 }
 
-// カテゴリーテーブル
 model Category {
-  id        Int             @id @default(autoincrement())
-  name      String          @unique
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+  id        Int                 @id @default(autoincrement())
+  name      String              @unique
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
   posts     CategoriesOnPosts[]
 }
 
-// ブログ記事とカテゴリーを多対多で紐付ける中間テーブル
 model CategoriesOnPosts {
-  id         Int       @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
   postId     Int
   categoryId Int
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  post       Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  category   Category  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 }

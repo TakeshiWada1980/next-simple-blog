@@ -9,6 +9,8 @@ import Link from "next/link";
 import cn from "classnames";
 import { ApiResponse } from "@/app/_types/ApiResponse";
 import DeleteActionDialog from "@/app/_components/elements/DeleteActionDialog";
+import ApiRequestHeader from "@/app/_types/ApiRequestHeader";
+import useAuth from "@/app/_hooks/useAuth";
 
 type Props = {
   post: PostWithCategory;
@@ -17,7 +19,7 @@ type Props = {
   handleDeleteAction: ({ isDone }: { isDone: boolean }) => void;
   deleteApiCaller: (
     url: string,
-    headers?: undefined
+    headers?: ApiRequestHeader
   ) => Promise<ApiResponse<null>>;
 };
 
@@ -27,13 +29,16 @@ type ButtonEvent =
   | React.TouchEvent<HTMLButtonElement>;
 
 const PostListItem: React.FC<Props> = (props) => {
-  const { post, selectedPostId, setSelectedPostId } = props;
+  const { post, selectedPostId, deleteApiCaller, setSelectedPostId } = props;
 
   //削除関連
   const deleteConfTitle = "本当に記事を削除してよいですか？";
   const deleteConfDescription =
     "選択された記事を削除します。削除後は、元に戻すことはできません。";
-  const deleteEndpoint = (id: number) => `/api/admin/posts/${id}`;
+  const deleteEndpoint = `/api/admin/posts/${post.id}`;
+  const apiRequestHeader = useAuth().apiRequestHeader;
+  const onDeleteCall = async () =>
+    await deleteApiCaller(deleteEndpoint, apiRequestHeader);
 
   const selectAction = (e: ButtonEvent) => {
     isSelected ? setSelectedPostId(null) : setSelectedPostId(post.id);
@@ -66,9 +71,8 @@ const PostListItem: React.FC<Props> = (props) => {
             className={cn(isSelected ? "block" : "hidden", "animate-jump")}
             title={deleteConfTitle}
             description={deleteConfDescription}
-            endpoint={deleteEndpoint(post.id)}
             handleDeleteAction={props.handleDeleteAction}
-            deleteApiCaller={props.deleteApiCaller}
+            onDeleteCall={onDeleteCall}
           />
           <button onClick={selectAction}>
             <FontAwesomeIcon

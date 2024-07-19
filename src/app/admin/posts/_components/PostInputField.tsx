@@ -6,23 +6,16 @@ import CategoryToggleButton from "./CategoryToggleButton";
 
 import PostRequest from "@/app/_types/PostRequest";
 import cn from "classnames";
+import Image from "next/image";
+import useThumbnailImage from "@/app/admin/posts/_hooks/useThumbnailImage";
 
 // スタイル設定
 const styles = {
-  // label要素、input要素、validateMsg(p)要素のコンテナ
   container: "flex mt-6 flex-col md:flex-row w-full",
-
-  // labelのスタイル
   label: "w-full md:w-2/12 md:mt-3 mb-2 font-bold",
-
-  // input要素とvalidateMsg(p)要素のコンテナ
   subContainer: "w-full md:w-10/12",
-
-  // テキストボックスとテキストエリアのスタイル
   input:
     "w-full px-3 py-3 border rounded-md duration-200 focus:outline-none focus:ring-2 focus:ring-slate-700 focus:border-transparent",
-
-  // テキストボックスとテキストエリアののスタイル（無効時）
   disabledInput: "hover:cursor-not-allowed bg-gray-100",
 };
 
@@ -34,6 +27,8 @@ type Props = {
 
 const PostInputField: React.FC<Props> = (props) => {
   const { register, formState } = useFormContext();
+  const { thumbnailImageUrl, handleImageChange } = useThumbnailImage();
+
   const isSubmitting = formState.isSubmitting;
   const errors = formState.errors as FieldErrors<PostRequest.Payload>;
   const {
@@ -41,6 +36,7 @@ const PostInputField: React.FC<Props> = (props) => {
     selectedCategoryIds,
     toggleCategorySelection,
   } = props;
+
   return (
     <>
       {/* タイトル */}
@@ -79,24 +75,55 @@ const PostInputField: React.FC<Props> = (props) => {
         </div>
       </div>
 
-      {/* 画像 */}
+      {/* 画像キー */}
       <div className={styles.container}>
-        <label htmlFor="thumbnailUrl" className={styles.label}>
-          画像URL
+        <label htmlFor="thumbnailImageKey" className={styles.label}>
+          画像キー
         </label>
         <div className={styles.subContainer}>
           <input
-            {...register("thumbnailUrl")}
-            id="thumbnailUrl"
+            {...register("thumbnailImageKey")}
+            id="thumbnailImageKey"
             type="text"
-            className={cn(styles.input, isSubmitting && styles.disabledInput)}
-            placeholder="画像のURLを入力してください。"
+            className={cn(styles.input, styles.disabledInput, "outline-none")}
+            placeholder="(ファイルを選択すると自動生成されます)"
             disabled={isSubmitting}
+            readOnly
           />
-          <ErrorMessage message={errors.thumbnailUrl?.message} />
+          <ErrorMessage message={errors.thumbnailImageKey?.message} />
         </div>
       </div>
 
+      {/* ファイル選択ボタン */}
+      <div className="flex mt-3 flex-col md:flex-row w-full">
+        <div className={styles.label}></div>
+        <div className={styles.subContainer}>
+          <input
+            type="file"
+            onChange={handleImageChange}
+            accept="image/png, image/jpeg"
+          />
+        </div>
+      </div>
+
+      {/* 画像プレビュー領域 */}
+      {thumbnailImageUrl && (
+        <div className="flex mt-3 flex-col md:flex-row w-full">
+          <div className={styles.label}></div>
+          <div className={styles.subContainer}>
+            <Image
+              className="rounded-lg"
+              src={thumbnailImageUrl}
+              alt="プレビュー画像"
+              width={800}
+              height={400}
+              priority
+            />
+          </div>
+        </div>
+      )}
+
+      {/* カテゴリの選択 */}
       <div className={styles.container}>
         <div className={styles.label}>カテゴリ</div>
         <div className={styles.subContainer}>

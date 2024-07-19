@@ -1,7 +1,7 @@
 import { urlPattern } from "@/app/_utils/common";
 
-const validateURL = (url: string): string => {
-  if (!urlPattern.test(url)) {
+const validateURL = (url: string | undefined): string => {
+  if (!url || !urlPattern.test(url)) {
     throw new Error(`${url} is not a valid URL`);
   }
   return url;
@@ -17,4 +17,8 @@ export const isDevelopmentEnv =
   process.env.NEXT_PUBLIC_IS_DEVELOPMENT_ENV === "true";
 
 // API取得時の遅延時間（ミリ秒）
-export const apiDelay = 500;
+export const apiDelay = 0;
+
+export const bucketName = "post_thumbnail";
+
+export const appBaseUrl = validateURL(process.env.NEXT_PUBLIC_APP_BASE_URL);

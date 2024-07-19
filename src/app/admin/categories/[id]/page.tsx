@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import useGetRequest from "@/app/_hooks/useGetRequest";
 import CategoryWithPostCount from "@/app/admin/posts/_types/CategoryWithPostCount";
 import PageWrapper from "@/app/_components/elements/PageWrapper";
@@ -9,15 +9,15 @@ import { isDevelopmentEnv } from "@/app/_utils/envConfig";
 import FetchLoading from "@/app/_components/elements/FetchLoading";
 import FetchError from "@/app/_components/elements/FetchError";
 import composeApiErrorMessage from "@/app/_utils/composeApiErrorMsg";
-import { useForm, FormProvider } from "react-hook-form";
+import { FormProvider } from "react-hook-form";
 
 // ウェブAPI関連
 import { ApiResponse } from "@/app/_types/ApiResponse";
 import createPutRequest from "@/app/_utils/createPutRequest";
 import createDeleteRequest from "@/app/_utils/createDeleteRequest";
-import ApiRequestHeader from "@/app/_types/ApiRequestHeader";
 import CategoryRequest from "@/app/_types/CategoryRequest";
 import AppErrorCode from "@/app/_types/AppErrorCode";
+import useAuth from "@/app/_hooks/useAuth";
 
 // フォーム構成関連
 import SubmitButton from "@/app/admin/_components/SubmitButton";
@@ -29,27 +29,30 @@ const deleteApiCaller = createDeleteRequest<ApiResponse<null>>();
 
 const putApiCaller = createPutRequest<
   CategoryRequest.Payload,
-  ApiResponse<CategoryRequest.Payload>,
-  ApiRequestHeader
+  ApiResponse<CategoryRequest.Payload>
 >();
 
-type Params = {
-  id: string;
-};
-
-const page: React.FC<{ params: Params }> = ({ params }) => {
+const Page: React.FC = () => {
+  const id: string = useParams().id as string;
   let pageTitle = "カテゴリの名前変更";
   const router = useRouter();
+  const apiRequestHeader = useAuth().apiRequestHeader;
+  const INVALID_apiRequestHeader = { Authorization: useAuth().token + "W" }; // 失敗テスト用
 
   const [serverErrorMessage, setServerErrorMessage] = useState<string | null>();
 
   // 記事投稿、カテゴリ一覧取得のAPIエンドポイント
   const categoriesGetEndpoint = `/api/admin/categories?sort=postcount`;
-  const categoryPutEndpoint = `/api/admin/categories/${params.id}`;
+  const categoryPutEndpoint = `/api/admin/categories/${id}`;
+  const categoryDeleteEndpoint = `/api/admin/categories/${id}`;
 
   // prettier-ignore
   const { data: categoriesData, error: categoriesGetError } = 
-    useGetRequest<CategoryWithPostCount[]>(categoriesGetEndpoint);
+    useGetRequest<CategoryWithPostCount[]>(categoriesGetEndpoint,apiRequestHeader);
+
+  const onDeleteCall = async () => {
+    return await deleteApiCaller(categoryDeleteEndpoint, apiRequestHeader);
+  };
 
   const categoryWithPostCountList = categoriesData?.data;
 
@@ -81,26 +84,28 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
     isDevelopmentEnv && console.log("■ >>> " + JSON.stringify(data));
     let res: ApiResponse<CategoryRequest.Payload> | null = null;
     try {
-      const headers = {
-        Authorization: "token-token",
-        "Content-Type": "application/json",
-      };
-      res = await putApiCaller(categoryPutEndpoint, data, headers);
+      res = await putApiCaller(categoryPutEndpoint, data, apiRequestHeader);
       isDevelopmentEnv && console.log("■ <<< " + JSON.stringify(res));
 
       if (res.success) {
         router.push("/admin/categories");
+        return;
       }
       if (res.error?.appErrorCode == AppErrorCode.CATEGORY_ALREADY_EXISTS) {
         setServerErrorMessage(`カテゴリ「${data.name}」は既に存在します。`);
+      } else {
+        setServerErrorMessage(
+          `操作に失敗しました。${res.error?.technicalInfo}`
+        );
       }
     } catch (error) {
       isDevelopmentEnv && console.log("■ <<< " + JSON.stringify(res));
+      setServerErrorMessage(`操作に失敗しました。${error}`);
     }
   };
 
   const oldName = categoryWithPostCountList?.find(
-    (c) => c.id === Number(params.id)
+    (c) => c.id === Number(id)
   )?.name;
 
   if (!oldName) {
@@ -108,7 +113,7 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
       <PageWrapper pageTitle={pageTitle}>
         <FetchError
           apiEndpoint={categoriesGetEndpoint}
-          message={`カテゴリID: ${params.id} は存在しません。`}
+          message={`カテゴリID: ${id} は存在しません。`}
         />
       </PageWrapper>
     );
@@ -116,7 +121,6 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
 
   const deleteConfTitle = `本当にカテゴリを削除してよいですか？`;
   const deleteConfDescription = `カテゴリ「${oldName}」を削除します。削除後は、元に戻すことはできません。投稿記事が削除されることはありません。`;
-  const deleteEndpoint = `/api/admin/categories/${params.id}`;
 
   const handleDeleteAction = async ({ isDone }: { isDone: boolean }) => {
     if (isDone) {
@@ -145,12 +149,13 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
             <SubmitButton label="名前を変更" />
           </FormProvider>
           <DeleteActionDialog
-            className="px-3 font-bold text-base"
+            className="px-3 font-bold text-base hover:bg-red-500"
             title={deleteConfTitle}
             description={deleteConfDescription}
-            endpoint={deleteEndpoint}
+            // endpoint={categoryDeleteEndpoint}
             handleDeleteAction={handleDeleteAction}
-            deleteApiCaller={deleteApiCaller}
+            // deleteApiCaller={deleteApiCaller}
+            onDeleteCall={onDeleteCall}
           />
         </div>
       </form>
@@ -158,4 +163,4 @@ const page: React.FC<{ params: Params }> = ({ params }) => {
   );
 };
 
-export default page;
+export default Page;

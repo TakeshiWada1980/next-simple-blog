@@ -1,6 +1,7 @@
 "use client";
 
-import { format } from "date-fns";
+import React, { useEffect, useState, useCallback } from "react";
+import { format, set } from "date-fns";
 import DOMPurify from "isomorphic-dompurify";
 
 import Image from "next/image";
@@ -11,10 +12,27 @@ import FetchLoading from "@/app/_components/elements/FetchLoading";
 import useGetRequest from "@/app/_hooks/useGetRequest";
 import PostWithCategory from "@/app/admin/posts/_types/PostWithCategory";
 import composeApiErrorMessage from "@/app/_utils/composeApiErrorMsg";
+import { supabase } from "@/utils/supabase";
+import { bucketName } from "@/app/_utils/envConfig";
 
 const Post: React.FC<{ id: string }> = ({ id }) => {
   const url = `/api/admin/posts/${id}`;
   const { data, error } = useGetRequest<PostWithCategory>(url);
+  const [thumbnailImageUrl, setThumbnailImageUrl] = useState<string>("");
+  // const [thumbnailImageKey, setThumbnailImageKey] = useState<string>("");
+
+  const fetchThumbnailUrl = useCallback(async (imageKey: string) => {
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from(bucketName).getPublicUrl(imageKey);
+    setThumbnailImageUrl(publicUrl);
+  }, []);
+
+  useEffect(() => {
+    if (data?.data?.thumbnailImageKey) {
+      fetchThumbnailUrl(data.data.thumbnailImageKey);
+    }
+  }, [data, fetchThumbnailUrl]);
 
   if (error) {
     return (
@@ -30,25 +48,23 @@ const Post: React.FC<{ id: string }> = ({ id }) => {
   const post = data.data as NonNullable<PostWithCategory>;
   const createdAt = format(post.createdAt, "yyyy/MM/dd HH:mm");
   const content = DOMPurify.sanitize(post.content, { ALLOWED_TAGS: ["br"] });
-  const thumbnail = post.thumbnailUrl;
   const categories = post.categories.map((c) => c.category.name);
   const title = post.title;
 
-  //FIXME:画像が`next.config.mjs`に登録されていないと
-  //ページ全体が「Unhandled Runtime Error」を吐く
-
   return (
     <div className="mt-5 flex flex-col justify-center">
-      {/* サムネイル */}
+      {/* サムネイル画像 */}
       <div className="flex justify-center items-center">
-        <Image
-          className="rounded-lg border border-slate-300"
-          src={thumbnail}
-          alt="サムネイル画像"
-          width={800}
-          height={400}
-          priority
-        />
+        {thumbnailImageUrl && (
+          <Image
+            className="rounded-lg border border-slate-300"
+            src={thumbnailImageUrl}
+            alt="サムネイル画像"
+            width={800}
+            height={400}
+            priority
+          />
+        )}
       </div>
       <div className="sm:px-4">
         {/* 日付 & カテゴリ*/}

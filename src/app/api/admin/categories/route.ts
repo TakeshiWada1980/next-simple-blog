@@ -12,11 +12,16 @@ import CategoryService from "@/app/_services/categoryService";
 import CategoryRequest from "@/app/_types/CategoryRequest";
 import { z } from "zod";
 import AppErrorCode from "@/app/_types/AppErrorCode";
+import {
+  validateAuthToken,
+  InvalidTokenError,
+} from "@/app/api/_helpers/validateAuthToken";
 
 // [GET] /api/admin/categories カテゴリ一覧の取得
 // [GET] /api/admin/categories?sort=postcount
 export const GET = async (req: NextRequest) => {
   try {
+    await validateAuthToken(req.headers.get("Authorization") ?? "");
     const { searchParams } = new URL(req.url);
     const sort = searchParams.get("sort");
     let categories: Category[];
@@ -35,6 +40,7 @@ export const GET = async (req: NextRequest) => {
 // [POST] /api/admin/categories カテゴリを新規作成
 export const POST = async (req: NextRequest) => {
   try {
+    await validateAuthToken(req.headers.get("Authorization") ?? "");
     const body: CategoryRequest.Payload = await req.json();
     const validatedBody = CategoryRequest.serverValidationSchema.parse(body);
     const insertedCategory = await CategoryService.insertCategory(
@@ -49,8 +55,19 @@ export const POST = async (req: NextRequest) => {
 };
 
 // [GET]失敗時のレスポンスを生成
-const createGetErrorResponse = (error: unknown): ApiErrorResponse =>
-  new ErrorResponseBuilder().setUnknownError(error).build();
+const createGetErrorResponse = (error: unknown): ApiErrorResponse => {
+  const errorResponseBuilder = new ErrorResponseBuilder();
+  if (error instanceof InvalidTokenError) {
+    errorResponseBuilder
+      .setHttpStatus(StatusCodes.UNAUTHORIZED)
+      .setOrigin(Origin.CLIENT)
+      .setAppErrorCode(error.appErrorCode)
+      .setTechnicalInfo(error.message);
+  } else {
+    errorResponseBuilder.setUnknownError(error);
+  }
+  return errorResponseBuilder.build();
+};
 
 // [POST]成功時のレスポンスを生成
 const createPostSuccessResponse = (
@@ -75,6 +92,12 @@ const createPostErrorResponse = (error: unknown): ApiErrorResponse => {
   } else if (error instanceof CategoryService.AlreadyExistsError) {
     errorResponseBuilder
       .setHttpStatus(StatusCodes.BAD_REQUEST)
+      .setOrigin(Origin.CLIENT)
+      .setAppErrorCode(error.appErrorCode)
+      .setTechnicalInfo(error.message);
+  } else if (error instanceof InvalidTokenError) {
+    errorResponseBuilder
+      .setHttpStatus(StatusCodes.UNAUTHORIZED)
       .setOrigin(Origin.CLIENT)
       .setAppErrorCode(error.appErrorCode)
       .setTechnicalInfo(error.message);

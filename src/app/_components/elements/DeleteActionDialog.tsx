@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import cn from "classnames";
+import { twMerge } from "tailwind-merge";
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { ApiResponse } from "@/app/_types/ApiResponse";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,43 +36,51 @@ const deleteButtonStyle = cn(
 
 type Props = {
   className?: string;
-  endpoint: string;
   title: string;
   description: string;
   handleDeleteAction: ({ isDone }: { isDone: boolean }) => void;
-  deleteApiCaller: (
-    url: string,
-    headers?: undefined
-  ) => Promise<ApiResponse<null>>;
+  onDeleteCall: () => Promise<ApiResponse<null>>;
 };
 
 const DeleteActionDialog: React.FC<Props> = (props) => {
   const {
-    endpoint,
+    // endpoint,
     title,
     description,
     handleDeleteAction,
-    deleteApiCaller,
+    // deleteApiCaller,
     className,
+    onDeleteCall,
   } = props;
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isBusy, setIsBusy] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    setErrorMsg(null);
+  }, [isDialogOpen]);
 
   const handleDeleteClick = async () => {
     setIsBusy(true);
-    const res = await deleteApiCaller(endpoint);
+    const res = await onDeleteCall();
     isDevelopmentEnv && console.log("■ <<< " + JSON.stringify(res));
-    handleDeleteAction({ isDone: true });
-    setIsBusy(false);
-    setIsDialogOpen(false);
+    if (res.success) {
+      handleDeleteAction({ isDone: true });
+      setIsBusy(false);
+      setIsDialogOpen(false);
+    } else {
+      handleDeleteAction({ isDone: false });
+      setErrorMsg(`削除に失敗しました。詳細 : ${res.error.technicalInfo}`);
+      setIsBusy(false);
+    }
   };
 
   return (
     <AlertDialog.Root open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <AlertDialog.Trigger asChild>
         <button
-          className={cn(buttonStyle, className)}
+          className={twMerge(buttonStyle, className)}
           onClick={() => setIsDialogOpen(true)}
         >
           <FontAwesomeIcon icon={faTrashCan} />
@@ -90,6 +99,7 @@ const DeleteActionDialog: React.FC<Props> = (props) => {
           </AlertDialog.Title>
           <AlertDialog.Description className="mt-4 mb-5 leading-normal">
             {description}
+            {errorMsg && <div className=" text-red-500">{errorMsg}</div>}
           </AlertDialog.Description>
           <div className="flex justify-end gap-4">
             <AlertDialog.Cancel asChild>
@@ -113,7 +123,6 @@ const DeleteActionDialog: React.FC<Props> = (props) => {
                 <div>削除</div>
               )}
             </button>
-            {/* <AlertDialog.Action asChild><button>削除</button></AlertDialog.Action> */}
           </div>
         </AlertDialog.Content>
       </AlertDialog.Portal>
