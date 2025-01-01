@@ -13,9 +13,15 @@ const useRouteGuard = (): Session | null | undefined => {
       return;
     }
 
-    if (session === null) {
-      router.replace("/login");
-    }
+    // 即時実行関数を使用して非同期処理を扱う
+    const redirect = async () => {
+      if (session === null) {
+        console.error("ログインしていません。");
+        await router.replace("/login");
+      }
+    };
+
+    redirect();
   }, [router, session]);
 
   return session;
