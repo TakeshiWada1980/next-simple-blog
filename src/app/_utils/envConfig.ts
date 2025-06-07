@@ -19,6 +19,6 @@ export const isDevelopmentEnv =
 // API取得時の遅延時間（ミリ秒）
 export const apiDelay = 0;
 
-export const bucketName = "post_thumbnail";
+export const bucketName = "post-thumbnail";
 
 export const appBaseUrl = validateURL(process.env.NEXT_PUBLIC_APP_BASE_URL);
